@@ -1,0 +1,33 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'java'
+}
+
+group 'ru.itmo.sd.shell'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "commons-io:commons-io:2.11.0"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+sourceSets {
+    main {
+        java.setSrcDirs(["src"])
+        resources.setSrcDirs(["resources"])
+    }
+    test {
+        java.setSrcDirs(["test"])
+        resources.setSrcDirs(["testResources"])
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
