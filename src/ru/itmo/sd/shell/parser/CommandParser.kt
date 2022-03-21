@@ -1,6 +1,18 @@
 package ru.itmo.sd.shell.parser
 
-import ru.itmo.sd.shell.command.*
+import ru.itmo.sd.shell.cli.command.CatCommand
+import ru.itmo.sd.shell.cli.command.CliCommand
+import ru.itmo.sd.shell.cli.command.CliElement
+import ru.itmo.sd.shell.cli.command.CliSimpleCommand
+import ru.itmo.sd.shell.cli.command.CliVariableAssignment
+import ru.itmo.sd.shell.cli.command.EchoCommand
+import ru.itmo.sd.shell.cli.command.ExitCommand
+import ru.itmo.sd.shell.cli.command.ExternalCommand
+import ru.itmo.sd.shell.cli.command.PipelineCommand
+import ru.itmo.sd.shell.cli.command.PwdCommand
+import ru.itmo.sd.shell.cli.command.WcCommand
+import ru.itmo.sd.shell.cli.util.Option
+import ru.itmo.sd.shell.exception.UnexpectedTokenException
 
 class CommandParser {
     private lateinit var lexer: CommandLexer
@@ -8,7 +20,7 @@ class CommandParser {
     private val currentToken: Token
         get() = lexer.currentToken
 
-    fun parse(input: String): Command {
+    fun parse(input: String): CliElement {
         lexer = CommandLexer(input)
         lexer.nextToken()
         return when (currentToken) {
@@ -17,7 +29,7 @@ class CommandParser {
         }
     }
 
-    private fun parseAssignment(): VariableAssignment {
+    private fun parseAssignment(): CliVariableAssignment {
         require(currentToken == Token.LET) { unexpectedToken("'let'") }
 
         lexer.nextToken()
@@ -28,40 +40,41 @@ class CommandParser {
         require(currentToken == Token.ASSIGN) { unexpectedToken("'='") }
 
         lexer.nextToken()
-        require(currentToken == Token.TEXT) { unexpectedToken("variable value") }
         val value = lexer.currentText
 
-        return VariableAssignment(name, value)
+        return CliVariableAssignment(name, value)
     }
 
     private fun parseCliCommand(): CliCommand {
-        var command = parseSingleCommand()
+        var command: CliCommand = parseSimpleCommand()
         while (true) {
             when (currentToken) {
                 Token.PIPE -> {
                     lexer.nextToken()
-                    command = PipelineCommand(command, parseSingleCommand())
+                    command = PipelineCommand(command, parseSimpleCommand())
                 }
                 else -> return command
             }
         }
     }
 
-    private fun parseSingleCommand(): CliCommand {
-        val command: CliCommand = when (currentToken) {
-            Token.CAT -> CatCommand()
-            Token.ECHO -> EchoCommand()
-            Token.WC -> WcCommand()
-            Token.PWD -> PwdCommand()
-            Token.EXIT -> ExitCommand()
-            Token.TEXT -> ExternalCommand(lexer.currentText)
-            else -> error("Unexpected token $currentToken")
+    private fun parseSimpleCommand(): CliSimpleCommand {
+        val buildCommand = when (currentToken) {
+            Token.CAT -> ::CatCommand
+            Token.ECHO -> ::EchoCommand
+            Token.WC -> ::WcCommand
+            Token.PWD -> ::PwdCommand
+            Token.EXIT -> ::ExitCommand
+            Token.TEXT -> {
+                val name = lexer.currentText
+                { opts, args -> ExternalCommand(name, opts, args) }
+            }
+            else -> throw UnexpectedTokenException(currentToken)
         }
-
         lexer.nextToken()
-        command.options += parseOptions()
-        command.arguments += parseArguments()
-        return command
+        val options = parseOptions()
+        val arguments = parseArguments()
+        return buildCommand(options, arguments)
     }
 
     private fun parseOptions(): List<Option> {

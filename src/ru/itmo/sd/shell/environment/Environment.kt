@@ -7,5 +7,5 @@ class Environment {
         variableByName[name] = value
     }
 
-    fun get(name: String): String? = variableByName[name]
+    operator fun get(name: String): String? = variableByName[name]
 }

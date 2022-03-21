@@ -8,8 +8,6 @@ class CommandLexer(private val input: String) {
     private var shouldSkipWhitespaces: Boolean = true
 
     fun nextToken() {
-        currentPos = 0
-
         skipWhitespaces()
 
         if (currentPos >= input.length) {
@@ -61,7 +59,7 @@ class CommandLexer(private val input: String) {
 
     private fun nextWord(): String {
         val start = currentPos
-        while (currentPos < input.length && !input[currentPos].isWhitespace()) {
+        while (currentPos < input.length && input[currentPos].isLetterOrDigit()) {
             currentPos++
         }
         return input.substring(start until currentPos)
