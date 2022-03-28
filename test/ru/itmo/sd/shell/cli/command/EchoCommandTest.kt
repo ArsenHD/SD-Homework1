@@ -18,7 +18,7 @@ class EchoCommandTest : AbstractSimpleCommandTest() {
     }
 
     private fun expectedEcho(arguments: List<String>): String =
-        arguments.joinToString(" ")
+        arguments.joinToString(separator = " ", postfix = "\n")
 
     companion object {
         @JvmStatic

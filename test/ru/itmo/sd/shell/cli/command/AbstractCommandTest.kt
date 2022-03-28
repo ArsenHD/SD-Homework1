@@ -14,5 +14,5 @@ abstract class AbstractCommandTest {
 }
 
 abstract class AbstractSimpleCommandTest : AbstractCommandTest() {
-    abstract fun command(arguments: List<String>): CliSimpleCommand
+    abstract fun command(arguments: List<String> = emptyList()): CliSimpleCommand
 }

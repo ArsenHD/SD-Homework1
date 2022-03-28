@@ -20,7 +20,7 @@ class ExternalCommand(
             code = returnCode
             return@execution
         }
-        output.appendLine(process.inputStream.reader().readText())
+        output.append(process.inputStream.reader().readText())
     }
 
     override fun toString(): String {

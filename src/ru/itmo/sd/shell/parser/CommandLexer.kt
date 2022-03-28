@@ -59,6 +59,7 @@ class CommandLexer(private val input: String) {
 
     private fun nextWord(): String {
         val start = currentPos
+        currentPos++
         while (currentPos < input.length && input[currentPos].isLetterOrDigit()) {
             currentPos++
         }

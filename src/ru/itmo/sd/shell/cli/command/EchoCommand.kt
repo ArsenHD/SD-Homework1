@@ -12,7 +12,7 @@ class EchoCommand(
     override val name: String = "echo"
 
     override fun execute(input: String?): ExecutionResult = execution {
-        val result = arguments.joinToString(" ")
+        val result = arguments.joinToString(separator = " ", postfix = "\n")
         output.append(result)
     }
 }

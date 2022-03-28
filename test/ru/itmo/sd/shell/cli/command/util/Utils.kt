@@ -16,8 +16,4 @@ object Utils {
         .filter { it.isDirectory }
         .map { it.path }
         .toList()
-
-//    val testFiles: List<String> by lazy {
-//        File(TEST_RESOURCES).listFiles()!!.map { it.canonicalPath }
-//    }
 }

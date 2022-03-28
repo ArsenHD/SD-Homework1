@@ -2,6 +2,8 @@ package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.Option
+import java.io.ByteArrayInputStream
+import java.io.PipedInputStream
 
 sealed interface CliElement
 

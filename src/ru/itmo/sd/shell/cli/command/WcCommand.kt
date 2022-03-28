@@ -49,7 +49,9 @@ class WcCommand(
     }
 
     private fun processLine(line: String): Pair<Int, Int> {
-        val words = line.split(" ").size
+        val words = line
+            .split(" ")
+            .filter { it.isNotEmpty() }.size
         val bytes = line.toByteArray().size
         return words to bytes
     }
