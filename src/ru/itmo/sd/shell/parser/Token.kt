@@ -5,11 +5,11 @@ enum class Token {
     ECHO,   // echo
     WC,     // wc
     PWD,    // pwd
+    GREP,    // grep
     EXIT,   // exit
     TEXT,   // <some text>
     PIPE,   // |
     LET,    // let
-    DASH,   // -
     ASSIGN, // =
     END     // <end of input>
 }

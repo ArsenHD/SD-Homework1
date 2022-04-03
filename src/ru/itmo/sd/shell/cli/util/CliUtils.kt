@@ -50,3 +50,11 @@ fun runCommand(command: CliCommand): ExecutionResult {
     }
     return result
 }
+
+internal const val ANSI_RED = "\u001B[31m"
+internal const val ANSI_RESET = "\u001B[0m"
+
+/**
+ * @return a receiver [String], but with a red color
+ */
+fun String.red() = "$ANSI_RED$this$ANSI_RESET"

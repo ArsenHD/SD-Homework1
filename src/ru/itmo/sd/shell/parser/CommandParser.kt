@@ -8,10 +8,10 @@ import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.EchoCommand
 import ru.itmo.sd.shell.cli.command.ExitCommand
 import ru.itmo.sd.shell.cli.command.ExternalCommand
+import ru.itmo.sd.shell.cli.command.GrepCommand
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.PwdCommand
 import ru.itmo.sd.shell.cli.command.WcCommand
-import ru.itmo.sd.shell.cli.util.Option
 import ru.itmo.sd.shell.exception.UnexpectedTokenException
 
 class CommandParser {
@@ -64,28 +64,17 @@ class CommandParser {
             Token.ECHO -> ::EchoCommand
             Token.WC -> ::WcCommand
             Token.PWD -> ::PwdCommand
+            Token.GREP -> ::GrepCommand
             Token.EXIT -> ::ExitCommand
             Token.TEXT -> {
                 val name = lexer.currentText
-                { opts, args -> ExternalCommand(name, opts, args) }
+                { args -> ExternalCommand(name, args) }
             }
             else -> throw UnexpectedTokenException(currentToken)
         }
         lexer.nextToken()
-        val options = parseOptions()
         val arguments = parseArguments()
-        return buildCommand(options, arguments)
-    }
-
-    private fun parseOptions(): List<Option> {
-        val options = mutableListOf<Option>()
-        while (currentToken == Token.DASH) {
-            lexer.nextToken()
-            require(currentToken == Token.TEXT) { unexpectedToken("option") }
-            options += Option(lexer.currentText)
-            lexer.nextToken()
-        }
-        return options
+        return buildCommand(arguments)
     }
 
     private fun parseArguments(): List<String> {

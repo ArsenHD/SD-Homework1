@@ -17,14 +17,6 @@ class CommandLexer(private val input: String) {
 
         val char = input[currentPos]
 
-        if (char == DASH) {
-            shouldSkipWhitespaces = false
-            currentToken = Token.DASH
-            currentText = DASH.toString()
-            currentPos++
-            return
-        }
-
         if (char == ASSIGN) {
             currentToken = Token.ASSIGN
             currentText = ASSIGN.toString()
@@ -39,6 +31,7 @@ class CommandLexer(private val input: String) {
             ECHO -> Token.ECHO
             WC -> Token.WC
             PWD -> Token.PWD
+            GREP -> Token.GREP
             EXIT -> Token.EXIT
             PIPE -> Token.PIPE
             LET -> Token.LET
@@ -60,7 +53,7 @@ class CommandLexer(private val input: String) {
     private fun nextWord(): String {
         val start = currentPos
         currentPos++
-        while (currentPos < input.length && input[currentPos].isLetterOrDigit()) {
+        while (currentPos < input.length && !input[currentPos].isWhitespace()) {
             currentPos++
         }
         return input.substring(start until currentPos)
@@ -71,10 +64,10 @@ class CommandLexer(private val input: String) {
         private const val ECHO = "echo"
         private const val WC = "wc"
         private const val PWD = "pwd"
+        private const val GREP = "grep"
         private const val EXIT = "exit"
         private const val PIPE = "|"
         private const val LET = "let"
-        private const val DASH = '-'
         private const val ASSIGN = '='
     }
 }
