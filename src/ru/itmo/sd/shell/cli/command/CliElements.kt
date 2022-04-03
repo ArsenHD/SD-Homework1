@@ -1,16 +1,45 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.cli.util.InputStrategy
 import ru.itmo.sd.shell.cli.util.Option
-import java.io.ByteArrayInputStream
-import java.io.PipedInputStream
+import ru.itmo.sd.shell.cli.util.OutputStrategy
+import ru.itmo.sd.shell.cli.util.PipedInputStrategy
+import ru.itmo.sd.shell.cli.util.PipedOutputStrategy
+import ru.itmo.sd.shell.cli.util.StdInputStrategy
+import ru.itmo.sd.shell.cli.util.StdOutputStrategy
+import java.io.Closeable
 
 sealed interface CliElement
 
 data class CliVariableAssignment(val name: String, val value: String) : CliElement
 
-sealed class CliCommand : CliElement {
+sealed class CliCommand : CliElement, Closeable {
+    private var inputStrategy: InputStrategy = StdInputStrategy
+    private var outputStrategy: OutputStrategy = StdOutputStrategy
+
+    fun connectTo(command: CliCommand) {
+        val newOutputStrategy = PipedOutputStrategy()
+        outputStrategy = newOutputStrategy
+        command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
+    }
+
     abstract fun execute(input: String? = null): ExecutionResult
+
+    fun readLine(): String? = inputStrategy.nextLine()
+
+    fun write(obj: Any) {
+        outputStrategy.write("$obj")
+    }
+
+    fun writeLine(obj: Any) {
+        outputStrategy.writeLine("$obj")
+    }
+
+    override fun close() {
+        inputStrategy.close()
+        outputStrategy.close()
+    }
 }
 
 /**
@@ -25,21 +54,10 @@ sealed class CliSimpleCommand : CliCommand() {
         if (arguments.isNotEmpty()) {
             return processArguments()
         }
-        if (input != null) {
-            return processInput(input)
-        }
         return processStdin()
     }
 
     open fun processArguments(): ExecutionResult = throw UnsupportedOperationException()
 
-    open fun processInput(input: String): ExecutionResult = throw UnsupportedOperationException()
-
     open fun processStdin(): ExecutionResult = throw UnsupportedOperationException()
 }
-
-/**
- * All non-pipeline commands that are implemented without calling the actual system shell.
- * In other words, all simple commands except for [ExternalCommand]
- */
-sealed class CliBuiltinCommand : CliSimpleCommand()

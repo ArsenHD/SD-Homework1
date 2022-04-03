@@ -10,22 +10,16 @@ import java.io.FileNotFoundException
 class CatCommand(
     override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
-) : CliBuiltinCommand() {
+) : CliSimpleCommand() {
 
     override val name: String = "cat"
 
     override fun processArguments(): ExecutionResult = processFiles()
 
-    override fun processInput(input: String): ExecutionResult = execution {
-        for (line in input.lines()) {
-            output.appendLine(line)
-        }
-    }
-
     override fun processStdin(): ExecutionResult = execution {
         var line = readLine()
         while (line != null) {
-            output.appendLine(line)
+            writeLine(line)
             line = readLine()
         }
     }
@@ -35,7 +29,7 @@ class CatCommand(
         val errorFiles = files.filter { !it.isFile }
 
         errorFiles.forEach {
-            output.appendLine("cat: ${it.name}: No such file or directory")
+            writeLine("cat: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             code = ReturnCode.FAILURE
@@ -44,7 +38,7 @@ class CatCommand(
         }
 
         for (file in files) {
-            file.forEachLine { output.appendLine(it) }
+            file.forEachLine { writeLine(it) }
         }
     }
 }

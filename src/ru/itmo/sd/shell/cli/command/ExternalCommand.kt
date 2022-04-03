@@ -16,11 +16,11 @@ class ExternalCommand(
         val returnCode = process.waitFor()
         val error = process.errorStream.reader().readText()
         if (error.isNotEmpty()) {
-            output.appendLine("Error: $error")
+            writeLine("Error: $error")
             code = returnCode
             return@execution
         }
-        output.append(process.inputStream.reader().readText())
+        write(process.inputStream.reader().readText())
     }
 
     override fun toString(): String {

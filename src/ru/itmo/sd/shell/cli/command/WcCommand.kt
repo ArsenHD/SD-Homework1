@@ -10,16 +10,11 @@ import java.io.FileNotFoundException
 class WcCommand(
     override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
-) : CliBuiltinCommand() {
+) : CliSimpleCommand() {
 
     override val name: String = "wc"
 
     override fun processArguments(): ExecutionResult = processFiles()
-
-    override fun processInput(input: String): ExecutionResult = execution {
-        val report = input.lines().asSequence().processLines()
-        output.appendLine(report)
-    }
 
     override fun processStdin(): ExecutionResult = execution {
         var line = readLine()
@@ -30,7 +25,7 @@ class WcCommand(
             }
         }
         val report = lines.processLines()
-        output.appendLine(report)
+        writeLine(report)
     }
 
     private fun Sequence<String>.processLines(): Report {
@@ -60,7 +55,7 @@ class WcCommand(
         val files = arguments.map { File(it) }
         val errorFiles = files.filter { !it.exists() }
         errorFiles.forEach {
-            output.appendLine("wc: ${it.name}: No such file or directory")
+            writeLine("wc: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             code = ReturnCode.FAILURE
@@ -76,10 +71,10 @@ class WcCommand(
             totalNewlines += newlines
             totalWords += words
             totalBytes += bytes
-            output.appendLine("$newlines $words $bytes ${it.name}")
+            writeLine("$newlines $words $bytes ${it.name}")
         }
         if (files.size > 1) {
-            output.appendLine("$totalNewlines $totalWords $totalBytes total")
+            writeLine("$totalNewlines $totalWords $totalBytes total")
         }
     }
 

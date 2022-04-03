@@ -7,7 +7,7 @@ import kotlin.system.exitProcess
 class ExitCommand(
     override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
-) : CliBuiltinCommand() {
+) : CliSimpleCommand() {
 
     override val name: String = "exit"
 
