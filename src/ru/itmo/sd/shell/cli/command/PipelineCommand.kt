@@ -6,8 +6,15 @@ import ru.itmo.sd.shell.cli.util.runCommand
 import kotlin.concurrent.thread
 
 class PipelineCommand(val left: CliCommand, val right: CliSimpleCommand) : CliCommand() {
-    override fun execute(): ExecutionResult {
+    init {
         left.connectTo(right)
+    }
+
+    override fun connectTo(command: CliCommand) {
+        right.connectTo(command)
+    }
+
+    override fun execute(): ExecutionResult {
         val leftRun = thread { runCommand(left) }
         val result = thread { runCommand(right) }
         leftRun.join()

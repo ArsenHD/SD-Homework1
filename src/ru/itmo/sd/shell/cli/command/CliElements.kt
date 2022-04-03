@@ -35,7 +35,7 @@ sealed class CliCommand : CliElement, Closeable {
         outputStrategy.close()
     }
 
-    fun connectTo(command: CliCommand) {
+    open fun connectTo(command: CliCommand) {
         val newOutputStrategy = PipedOutputStrategy()
         outputStrategy = newOutputStrategy
         command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
