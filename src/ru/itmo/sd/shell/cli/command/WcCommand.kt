@@ -1,31 +1,32 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.Option
 import ru.itmo.sd.shell.cli.util.ReturnCode
 import ru.itmo.sd.shell.cli.util.execution
 import java.io.File
 import java.io.FileNotFoundException
 
 class WcCommand(
-    override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
 ) : CliSimpleCommand() {
 
     override val name: String = "wc"
 
-    override fun processArguments(): ExecutionResult = processFiles()
-
-    override fun processStdin(): ExecutionResult = execution {
-        var line = readLine()
-        val lines = sequence {
-            while (line != null) {
-                yield(line!!)
-                line = readLine()
-            }
+    override fun execute(): ExecutionResult {
+        if (arguments.isNotEmpty()) {
+            return processFiles()
         }
-        val report = lines.processLines()
-        writeLine(report)
+        return execution {
+            var line = readLine()
+            val lines = sequence {
+                while (line != null) {
+                    yield(line!!)
+                    line = readLine()
+                }
+            }
+            val report = lines.processLines()
+            writeLine(report)
+        }
     }
 
     private fun Sequence<String>.processLines(): Report {

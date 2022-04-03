@@ -2,8 +2,8 @@ package ru.itmo.sd.shell.cli.util
 
 import ru.itmo.sd.shell.cli.command.CliCommand
 
-data class Option(val value: String) {
-    override fun toString(): String = "-$value"
+data class Option(val name: String, val values: List<String>) {
+    override fun toString(): String = "-$name ${values.joinToString(" ")}"
 }
 
 internal object ReturnCode {
@@ -41,12 +41,10 @@ internal fun CliCommand.execution(block: ExecutionResultBuilder.() -> Unit): Exe
     }
 
 /**
- * Run [command] with the given [input].
- * If [input] is null, the command will still be run.
- * The command's behavior depends on its implementation.
+ * Run a given [command].
  */
-fun runCommand(command: CliCommand, input: String? = null): ExecutionResult {
-    val result = command.execute(input)
+fun runCommand(command: CliCommand): ExecutionResult {
+    val result = command.execute()
     if (result.code != ReturnCode.OK && result.exception != null) {
         println(result.exception.message)
     }

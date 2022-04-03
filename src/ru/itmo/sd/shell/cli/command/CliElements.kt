@@ -18,13 +18,7 @@ sealed class CliCommand : CliElement, Closeable {
     private var inputStrategy: InputStrategy = StdInputStrategy
     private var outputStrategy: OutputStrategy = StdOutputStrategy
 
-    fun connectTo(command: CliCommand) {
-        val newOutputStrategy = PipedOutputStrategy()
-        outputStrategy = newOutputStrategy
-        command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
-    }
-
-    abstract fun execute(input: String? = null): ExecutionResult
+    abstract fun execute(): ExecutionResult
 
     fun readLine(): String? = inputStrategy.nextLine()
 
@@ -40,6 +34,12 @@ sealed class CliCommand : CliElement, Closeable {
         inputStrategy.close()
         outputStrategy.close()
     }
+
+    fun connectTo(command: CliCommand) {
+        val newOutputStrategy = PipedOutputStrategy()
+        outputStrategy = newOutputStrategy
+        command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
+    }
 }
 
 /**
@@ -47,17 +47,26 @@ sealed class CliCommand : CliElement, Closeable {
  */
 sealed class CliSimpleCommand : CliCommand() {
     abstract val name: String
-    abstract val options: List<Option>
     abstract val arguments: List<String>
 
-    override fun execute(input: String?): ExecutionResult {
-        if (arguments.isNotEmpty()) {
-            return processArguments()
-        }
-        return processStdin()
+    /**
+     * Map from option name to a number of option parameters. Empty by default.
+     *
+     * For grep it will be `{("-i": 0), ("-w": 0), ("-A": 1)}`.
+     *
+     * In this example `-i` and `-w` are just flags, they have no parameters.
+     * Whereas option `-A` has one parameter.
+     */
+    open val optionsInfo: Map<String, Int> = emptyMap()
+
+    val options: Map<String, Option> by lazy {
+        optionsInfo
+            .filterKeys { it in arguments }
+            .asSequence()
+            .associate { (name, amount) ->
+                val index = arguments.indexOf(name)
+                val values = arguments.subList(index + 1, index + 1 + amount)
+                name to Option(name, values)
+            }
     }
-
-    open fun processArguments(): ExecutionResult = throw UnsupportedOperationException()
-
-    open fun processStdin(): ExecutionResult = throw UnsupportedOperationException()
 }

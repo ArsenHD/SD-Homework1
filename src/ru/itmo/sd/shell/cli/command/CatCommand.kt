@@ -1,26 +1,27 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.Option
 import ru.itmo.sd.shell.cli.util.ReturnCode
 import ru.itmo.sd.shell.cli.util.execution
 import java.io.File
 import java.io.FileNotFoundException
 
 class CatCommand(
-    override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
 ) : CliSimpleCommand() {
 
     override val name: String = "cat"
 
-    override fun processArguments(): ExecutionResult = processFiles()
-
-    override fun processStdin(): ExecutionResult = execution {
-        var line = readLine()
-        while (line != null) {
-            writeLine(line)
-            line = readLine()
+    override fun execute(): ExecutionResult {
+        if (arguments.isNotEmpty()) {
+            return processFiles()
+        }
+        return execution {
+            var line = readLine()
+            while (line != null) {
+                writeLine(line)
+                line = readLine()
+            }
         }
     }
 
