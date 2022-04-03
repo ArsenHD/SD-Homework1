@@ -17,10 +17,10 @@ class ExternalCommandTest : AbstractSimpleCommandTest() {
         assertEquals(0, expectedCode)
         assertTrue(error.isEmpty())
 
-        val (code, output) = command(listOf(cmdName)).execute()
+        val (code, _) = command(listOf(cmdName)).execute()
 
         assertEquals(expectedCode, code)
-        assertEquals(expected, output)
+        assertEquals(expected, outputStream.toString())
     }
 
     @Test

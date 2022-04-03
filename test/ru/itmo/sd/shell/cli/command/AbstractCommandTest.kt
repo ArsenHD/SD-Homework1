@@ -1,9 +1,26 @@
 package ru.itmo.sd.shell.cli.command
 
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import ru.itmo.sd.shell.cli.command.util.Utils
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.PrintStream
 
 abstract class AbstractCommandTest {
+    protected lateinit var outputStream: ByteArrayOutputStream
+
+    @BeforeEach
+    fun setupStreams() {
+        outputStream = ByteArrayOutputStream()
+        System.setOut(PrintStream(outputStream))
+    }
+
+    @AfterEach
+    fun restoreStreams() {
+        System.setOut(System.out)
+    }
+
     companion object {
         val testFiles = Utils.testFiles
         val testDirs = Utils.testDirs
