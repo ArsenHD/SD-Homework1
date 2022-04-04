@@ -38,8 +38,16 @@ class CatCommand(
             return@execution
         }
 
-        for (file in files) {
-            file.forEachLine { writeLine(it) }
+        files.forEach { writeFileContents(it) }
+    }
+
+    private fun writeFileContents(file: File) {
+        file.bufferedReader().use { reader ->
+            var char = reader.read()
+            while (char != -1) {
+                write(char.toChar())
+                char = reader.read()
+            }
         }
     }
 }
