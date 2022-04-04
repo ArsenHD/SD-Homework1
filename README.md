@@ -1,4 +1,4 @@
-# Software Design HW#1
+# Software Design HW#1, 2
 
 ### Поддержанные механизмы:
 * Команды
@@ -6,6 +6,7 @@
   * echo
   * pwd
   * wc
+  * grep
   * external command (вызов внешнего процесса)
   * exit (останавливает shell)
 * Пайплайны из команд
