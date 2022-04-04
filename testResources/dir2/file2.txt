@@ -1,0 +1,7 @@
+First pattern entry
+Some line
+Another line
+Yet another line
+Another line once again
+There is another pattern entry
+One more line

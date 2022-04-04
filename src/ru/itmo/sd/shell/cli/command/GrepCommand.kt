@@ -38,13 +38,13 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
 
     private val regex: Regex = Regex(pattern, regexOptions)
 
-    private val fileNames: List<String> = arguments.drop(argumentsStartIdx + 1)
+    private val fileName: String? = arguments.getOrNull(argumentsStartIdx + 1)
 
     override val name: String = "grep"
 
     override fun execute(): ExecutionResult {
-        if (fileNames.isNotEmpty()) {
-            return processFiles()
+        if (fileName != null) {
+            return processFile()
         }
         return execution {
             var line = readLine()
@@ -59,36 +59,29 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
         line.takeIf { regex.containsMatchIn(it) }
             ?.replace(regex) { it.value.red() }
 
-    private fun processFiles() = execution {
-        val files = fileNames.map { File(it) }
-        val errorFiles = files.filter { !it.isFile }
-
-        errorFiles.forEach {
-            writeLine("grep: ${it.name}: No such file or directory")
-        }
-
-        if (errorFiles.isNotEmpty()) {
+    private fun processFile() = execution {
+        val file = File(fileName!!)
+        if (!file.isFile) {
+            writeLine("grep: ${file.name}: No such file or directory")
             code = ReturnCode.FAILURE
-            exception = FileNotFoundException(errorFiles.first().name)
+            exception = FileNotFoundException(file.name)
             return@execution
         }
 
-        for (file in files) {
-            var idx = 0
-            var prevMatchIdx = -padding - 1
-            file.forEachLine {
-                val processed = processLine(it)
-                if (processed != null) {
-                    if (idx - prevMatchIdx != 1) {
-                        writeLine(SEPARATOR_LINE)
-                    }
-                    writeLine(processed)
-                    prevMatchIdx = idx
-                } else if (idx - prevMatchIdx <= padding) {
-                    writeLine(it)
+        var idx = 0
+        var prevMatchIdx = -padding - 1
+        file.forEachLine {
+            val processed = processLine(it)
+            if (processed != null) {
+                if (idx - prevMatchIdx != 1) {
+                    writeLine(SEPARATOR_LINE)
                 }
-                idx++
+                writeLine(processed)
+                prevMatchIdx = idx
+            } else if (idx - prevMatchIdx <= padding) {
+                writeLine(it)
             }
+            idx++
         }
     }
 
