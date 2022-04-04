@@ -1,6 +1,7 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.environment.Environment
 import kotlin.system.exitProcess
 
 class ExitCommand(
@@ -9,7 +10,7 @@ class ExitCommand(
 
     override val name: String = "exit"
 
-    override fun execute(): ExecutionResult {
+    override fun execute(env: Environment): ExecutionResult {
         println("*** Exiting shell ***")
         exitProcess(0)
     }

@@ -1,6 +1,7 @@
 package ru.itmo.sd.shell.cli.util
 
 import ru.itmo.sd.shell.cli.command.CliCommand
+import ru.itmo.sd.shell.environment.Environment
 
 data class Option(val name: String, val values: List<String>) {
     override fun toString(): String = "-$name ${values.joinToString(" ")}"
@@ -43,8 +44,8 @@ internal fun CliCommand.execution(block: ExecutionResultBuilder.() -> Unit): Exe
 /**
  * Run a given [command].
  */
-fun runCommand(command: CliCommand): ExecutionResult {
-    val result = command.execute()
+fun runCommand(command: CliCommand, env: Environment): ExecutionResult {
+    val result = command.execute(env)
     if (result.code != ReturnCode.OK && result.exception != null) {
         println(result.exception.message)
     }

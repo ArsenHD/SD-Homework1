@@ -1,6 +1,7 @@
 package ru.itmo.sd.shell.parser
 
 import ru.itmo.sd.shell.cli.command.CatCommand
+import ru.itmo.sd.shell.cli.command.CdCommand
 import ru.itmo.sd.shell.cli.command.CliCommand
 import ru.itmo.sd.shell.cli.command.CliElement
 import ru.itmo.sd.shell.cli.command.CliSimpleCommand
@@ -9,6 +10,7 @@ import ru.itmo.sd.shell.cli.command.EchoCommand
 import ru.itmo.sd.shell.cli.command.ExitCommand
 import ru.itmo.sd.shell.cli.command.ExternalCommand
 import ru.itmo.sd.shell.cli.command.GrepCommand
+import ru.itmo.sd.shell.cli.command.LsCommand
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.PwdCommand
 import ru.itmo.sd.shell.cli.command.WcCommand
@@ -64,6 +66,8 @@ class CommandParser {
             Token.ECHO -> ::EchoCommand
             Token.WC -> ::WcCommand
             Token.PWD -> ::PwdCommand
+            Token.CD -> ::CdCommand
+            Token.LS -> ::LsCommand
             Token.GREP -> ::GrepCommand
             Token.EXIT -> ::ExitCommand
             Token.TEXT -> {

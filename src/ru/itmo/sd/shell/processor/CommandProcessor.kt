@@ -30,7 +30,7 @@ class CommandProcessor {
                 environment[name] = value
             }
             is CliCommand -> {
-                runCommand(cliElement)
+                runCommand(cliElement, environment)
             }
         }
     }.onFailure {

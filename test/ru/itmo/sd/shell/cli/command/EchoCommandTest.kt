@@ -12,7 +12,7 @@ class EchoCommandTest : AbstractSimpleCommandTest() {
     fun testEcho(arguments: List<String>) {
         val echo = command(arguments)
         val expected = expectedEcho(arguments)
-        val (code, _) = echo.execute()
+        val (code, _) = echo.execute(env)
         Assertions.assertEquals(0, code)
         Assertions.assertEquals(expected, outputStream.toString())
     }

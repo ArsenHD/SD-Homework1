@@ -3,6 +3,7 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.ReturnCode
 import ru.itmo.sd.shell.cli.util.execution
+import ru.itmo.sd.shell.environment.Environment
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -12,7 +13,7 @@ class CatCommand(
 
     override val name: String = "cat"
 
-    override fun execute(): ExecutionResult {
+    override fun execute(env: Environment): ExecutionResult {
         if (arguments.isNotEmpty()) {
             return processFiles()
         }

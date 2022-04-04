@@ -16,7 +16,7 @@ class WcCommandTest : AbstractSimpleCommandTest() {
         mockkStatic(CONSOLE_KT)
         every { readLine() } returnsMany input andThen null
         val wc = command()
-        val (code, _) = wc.execute()
+        val (code, _) = wc.execute(env)
 
         assertEquals(0, code)
         assertEquals(expected, outputStream.toString())

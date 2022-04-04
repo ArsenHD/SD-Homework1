@@ -4,6 +4,7 @@ import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.ReturnCode
 import ru.itmo.sd.shell.cli.util.execution
 import ru.itmo.sd.shell.cli.util.red
+import ru.itmo.sd.shell.environment.Environment
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -42,7 +43,7 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
 
     override val name: String = "grep"
 
-    override fun execute(): ExecutionResult {
+    override fun execute(env: Environment): ExecutionResult {
         if (fileName != null) {
             return processFile()
         }

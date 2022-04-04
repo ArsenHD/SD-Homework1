@@ -13,7 +13,7 @@ class GrepCommandTest : AbstractSimpleCommandTest() {
     @MethodSource("argumentProvider")
     fun testGrep(expected: String, arguments: List<String>) {
         val grep = command(arguments)
-        val (code, _) = grep.execute()
+        val (code, _) = grep.execute(env)
         assertEquals(0, code)
         assertEquals(expected, outputStream.toString())
     }

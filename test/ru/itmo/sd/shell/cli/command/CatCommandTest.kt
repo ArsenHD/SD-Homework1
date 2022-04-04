@@ -13,7 +13,7 @@ class CatCommandTest : AbstractSimpleCommandTest() {
     fun testCat(fileNames: List<String>) {
         val cat = command(fileNames)
         val expected = expectedCat(fileNames)
-        val (code, _) = cat.execute()
+        val (code, _) = cat.execute(env)
         assertEquals(0, code)
         assertEquals(expected, outputStream.toString())
     }

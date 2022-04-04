@@ -5,6 +5,8 @@ enum class Token {
     ECHO,   // echo
     WC,     // wc
     PWD,    // pwd
+    CD,    // cd
+    LS,    // cd
     GREP,    // grep
     EXIT,   // exit
     TEXT,   // <some text>

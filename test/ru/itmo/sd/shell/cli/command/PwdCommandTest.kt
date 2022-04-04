@@ -8,7 +8,7 @@ class PwdCommandTest : AbstractSimpleCommandTest() {
     @Test
     fun testPwd() {
         val pwd = command()
-        val (code, _) = pwd.execute()
+        val (code, _) = pwd.execute(env)
         val expected = "${System.getProperty("user.dir")}\n"
         Assertions.assertEquals(0, code)
         Assertions.assertEquals(expected, outputStream.toString())

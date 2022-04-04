@@ -8,6 +8,7 @@ import ru.itmo.sd.shell.cli.util.PipedInputStrategy
 import ru.itmo.sd.shell.cli.util.PipedOutputStrategy
 import ru.itmo.sd.shell.cli.util.StdInputStrategy
 import ru.itmo.sd.shell.cli.util.StdOutputStrategy
+import ru.itmo.sd.shell.environment.Environment
 import java.io.Closeable
 
 sealed interface CliElement
@@ -18,7 +19,7 @@ sealed class CliCommand : CliElement, Closeable {
     private var inputStrategy: InputStrategy = StdInputStrategy
     private var outputStrategy: OutputStrategy = StdOutputStrategy
 
-    abstract fun execute(): ExecutionResult
+    abstract fun execute(env: Environment): ExecutionResult
 
     fun readLine(): String? = inputStrategy.nextLine()
 
