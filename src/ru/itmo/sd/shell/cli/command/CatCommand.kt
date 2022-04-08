@@ -1,32 +1,28 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.Option
 import ru.itmo.sd.shell.cli.util.ReturnCode
 import ru.itmo.sd.shell.cli.util.execution
+import ru.itmo.sd.shell.environment.Environment
 import java.io.File
 import java.io.FileNotFoundException
 
 class CatCommand(
-    override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
-) : CliBuiltinCommand() {
+) : CliSimpleCommand() {
 
     override val name: String = "cat"
 
-    override fun processArguments(): ExecutionResult = processFiles()
-
-    override fun processInput(input: String): ExecutionResult = execution {
-        for (line in input.lines()) {
-            output.appendLine(line)
+    override fun execute(env: Environment): ExecutionResult {
+        if (arguments.isNotEmpty()) {
+            return processFiles()
         }
-    }
-
-    override fun processStdin(): ExecutionResult = execution {
-        var line = readLine()
-        while (line != null) {
-            output.appendLine(line)
-            line = readLine()
+        return execution {
+            var line = readLine()
+            while (line != null) {
+                writeLine(line)
+                line = readLine()
+            }
         }
     }
 
@@ -35,7 +31,7 @@ class CatCommand(
         val errorFiles = files.filter { !it.isFile }
 
         errorFiles.forEach {
-            output.appendLine("cat: ${it.name}: No such file or directory")
+            writeLine("cat: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             code = ReturnCode.FAILURE
@@ -43,8 +39,16 @@ class CatCommand(
             return@execution
         }
 
-        for (file in files) {
-            file.forEachLine { output.appendLine(it) }
+        files.forEach { writeFileContents(it) }
+    }
+
+    private fun writeFileContents(file: File) {
+        file.bufferedReader().use { reader ->
+            var char = reader.read()
+            while (char != -1) {
+                write(char.toChar())
+                char = reader.read()
+            }
         }
     }
 }

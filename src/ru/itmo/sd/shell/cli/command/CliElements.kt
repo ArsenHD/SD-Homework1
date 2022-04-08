@@ -1,16 +1,46 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.cli.util.InputStrategy
 import ru.itmo.sd.shell.cli.util.Option
-import java.io.ByteArrayInputStream
-import java.io.PipedInputStream
+import ru.itmo.sd.shell.cli.util.OutputStrategy
+import ru.itmo.sd.shell.cli.util.PipedInputStrategy
+import ru.itmo.sd.shell.cli.util.PipedOutputStrategy
+import ru.itmo.sd.shell.cli.util.StdInputStrategy
+import ru.itmo.sd.shell.cli.util.StdOutputStrategy
+import ru.itmo.sd.shell.environment.Environment
+import java.io.Closeable
 
 sealed interface CliElement
 
 data class CliVariableAssignment(val name: String, val value: String) : CliElement
 
-sealed class CliCommand : CliElement {
-    abstract fun execute(input: String? = null): ExecutionResult
+sealed class CliCommand : CliElement, Closeable {
+    private var inputStrategy: InputStrategy = StdInputStrategy
+    private var outputStrategy: OutputStrategy = StdOutputStrategy
+
+    abstract fun execute(env: Environment): ExecutionResult
+
+    fun readLine(): String? = inputStrategy.nextLine()
+
+    fun write(obj: Any) {
+        outputStrategy.write("$obj")
+    }
+
+    fun writeLine(obj: Any) {
+        outputStrategy.writeLine("$obj")
+    }
+
+    override fun close() {
+        inputStrategy.close()
+        outputStrategy.close()
+    }
+
+    open fun connectTo(command: CliCommand) {
+        val newOutputStrategy = PipedOutputStrategy()
+        outputStrategy = newOutputStrategy
+        command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
+    }
 }
 
 /**
@@ -18,28 +48,26 @@ sealed class CliCommand : CliElement {
  */
 sealed class CliSimpleCommand : CliCommand() {
     abstract val name: String
-    abstract val options: List<Option>
     abstract val arguments: List<String>
 
-    override fun execute(input: String?): ExecutionResult {
-        if (arguments.isNotEmpty()) {
-            return processArguments()
-        }
-        if (input != null) {
-            return processInput(input)
-        }
-        return processStdin()
+    /**
+     * Map from option name to a number of option parameters. Empty by default.
+     *
+     * For grep it will be `{("-i": 0), ("-w": 0), ("-A": 1)}`.
+     *
+     * In this example `-i` and `-w` are just flags, they have no parameters.
+     * Whereas option `-A` has one parameter.
+     */
+    open val optionsInfo: Map<String, Int> = emptyMap()
+
+    val options: Map<String, Option> by lazy {
+        optionsInfo
+            .filterKeys { it in arguments }
+            .asSequence()
+            .associate { (name, amount) ->
+                val index = arguments.indexOf(name)
+                val values = arguments.subList(index + 1, index + 1 + amount)
+                name to Option(name, values)
+            }
     }
-
-    open fun processArguments(): ExecutionResult = throw UnsupportedOperationException()
-
-    open fun processInput(input: String): ExecutionResult = throw UnsupportedOperationException()
-
-    open fun processStdin(): ExecutionResult = throw UnsupportedOperationException()
 }
-
-/**
- * All non-pipeline commands that are implemented without calling the actual system shell.
- * In other words, all simple commands except for [ExternalCommand]
- */
-sealed class CliBuiltinCommand : CliSimpleCommand()

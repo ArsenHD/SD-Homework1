@@ -1,17 +1,16 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.Option
+import ru.itmo.sd.shell.environment.Environment
 import kotlin.system.exitProcess
 
 class ExitCommand(
-    override val options: List<Option> = emptyList(),
     override val arguments: List<String> = emptyList()
-) : CliBuiltinCommand() {
+) : CliSimpleCommand() {
 
     override val name: String = "exit"
 
-    override fun execute(input: String?): ExecutionResult {
+    override fun execute(env: Environment): ExecutionResult {
         println("*** Exiting shell ***")
         exitProcess(0)
     }

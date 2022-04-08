@@ -30,8 +30,7 @@ class CommandProcessor {
                 environment[name] = value
             }
             is CliCommand -> {
-                val output = runCommand(cliElement)
-                print(output)
+                runCommand(cliElement, environment)
             }
         }
     }.onFailure {

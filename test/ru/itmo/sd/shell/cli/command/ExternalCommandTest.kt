@@ -17,16 +17,16 @@ class ExternalCommandTest : AbstractSimpleCommandTest() {
         assertEquals(0, expectedCode)
         assertTrue(error.isEmpty())
 
-        val (code, output) = command(listOf(cmdName)).execute()
+        val (code, _) = command(listOf(cmdName)).execute(env)
 
         assertEquals(expectedCode, code)
-        assertEquals(expected, output)
+        assertEquals(expected, outputStream.toString())
     }
 
     @Test
     fun testMissingCommand() {
         assertThrows<Exception> {
-            command(listOf("abc")).execute()
+            command(listOf("abc")).execute(env)
         }
     }
 
