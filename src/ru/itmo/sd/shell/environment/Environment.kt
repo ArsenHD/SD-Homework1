@@ -9,7 +9,7 @@ class Environment {
 
     operator fun get(name: String): String? = variableByName[name]
 
-    fun getPwd(): String = variableByName["PWD"]!!
+    fun getPwd(): String = variableByName["PWD"] ?: System.getProperty("user.dir")
 
     fun setPwd(value: String) {
         variableByName["PWD"] = value
