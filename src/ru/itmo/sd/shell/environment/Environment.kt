@@ -8,4 +8,6 @@ class Environment {
     }
 
     operator fun get(name: String): String? = variableByName[name]
+
+    operator fun contains(name: String): Boolean = name in variableByName
 }

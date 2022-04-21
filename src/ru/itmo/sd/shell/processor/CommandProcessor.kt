@@ -13,7 +13,7 @@ class CommandProcessor {
     fun run() {
         var line = readLine()
         while (line != null) {
-            val expandedLine = handler.substituteVariables(line)
+            val expandedLine = handler.preprocessRawText(line)
             if (expandedLine.isNotEmpty()) {
                 val element = parser.parse(expandedLine)
                 process(element)

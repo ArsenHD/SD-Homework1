@@ -53,7 +53,7 @@ class CommandLexer(private val input: String) {
     private fun nextWord(): String {
         val start = currentPos
         currentPos++
-        while (currentPos < input.length && !input[currentPos].isWhitespace()) {
+        while (currentPos < input.length && !input[currentPos].isWhitespace() && input[currentPos] != '=') {
             currentPos++
         }
         return input.substring(start until currentPos)
