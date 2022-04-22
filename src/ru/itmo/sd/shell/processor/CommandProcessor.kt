@@ -1,7 +1,6 @@
 package ru.itmo.sd.shell.processor
 
 import ru.itmo.sd.shell.cli.command.*
-import ru.itmo.sd.shell.cli.util.runCommand
 import ru.itmo.sd.shell.environment.Environment
 import ru.itmo.sd.shell.parser.CommandParser
 

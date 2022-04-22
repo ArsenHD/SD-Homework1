@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class EchoCommandTest : AbstractSimpleCommandTest() {
 
@@ -12,8 +13,8 @@ class EchoCommandTest : AbstractSimpleCommandTest() {
     fun testEcho(arguments: List<String>) {
         val echo = command(arguments)
         val expected = expectedEcho(arguments)
-        val (code, _) = echo.execute()
-        Assertions.assertEquals(0, code)
+        val code = echo.execute()
+        Assertions.assertEquals(ExecutionResult.OK, code)
         Assertions.assertEquals(expected, outputStream.toString())
     }
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class WcCommandTest : AbstractSimpleCommandTest() {
 
@@ -16,9 +17,9 @@ class WcCommandTest : AbstractSimpleCommandTest() {
         mockkStatic(CONSOLE_KT)
         every { readLine() } returnsMany input andThen null
         val wc = command()
-        val (code, _) = wc.execute()
+        val code = wc.execute()
 
-        assertEquals(0, code)
+        assertEquals(ExecutionResult.OK, code)
         assertEquals(expected, outputStream.toString())
     }
 

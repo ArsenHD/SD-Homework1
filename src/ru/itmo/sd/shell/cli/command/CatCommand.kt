@@ -1,10 +1,7 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.ReturnCode
-import ru.itmo.sd.shell.cli.util.execution
 import java.io.File
-import java.io.FileNotFoundException
 
 class CatCommand(
     override val arguments: List<String> = emptyList()
@@ -16,16 +13,15 @@ class CatCommand(
         if (arguments.isNotEmpty()) {
             return processFiles()
         }
-        return execution {
-            var char = read()
-            while (char != -1) {
-                write(char)
-                char = read()
-            }
+        var char = read()
+        while (char != -1) {
+            write(char)
+            char = read()
         }
+        return ExecutionResult.OK
     }
 
-    private fun processFiles() = execution {
+    private fun processFiles(): ExecutionResult {
         val files = arguments.map { File(it) }
         val errorFiles = files.filter { !it.isFile }
 
@@ -33,12 +29,11 @@ class CatCommand(
             errorWriteLine("cat: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
-            code = ReturnCode.FAILURE
-            exception = FileNotFoundException(errorFiles.first().name)
-            return@execution
+            return ExecutionResult.FAILURE
         }
 
         files.forEach { writeFileContents(it) }
+        return ExecutionResult.OK
     }
 
     private fun writeFileContents(file: File) {

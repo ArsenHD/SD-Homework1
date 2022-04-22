@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.red
 
 class GrepCommandTest : AbstractSimpleCommandTest() {
@@ -13,8 +14,8 @@ class GrepCommandTest : AbstractSimpleCommandTest() {
     @MethodSource("argumentProvider")
     fun testGrep(expected: String, arguments: List<String>) {
         val grep = command(arguments)
-        val (code, _) = grep.execute()
-        assertEquals(0, code)
+        val code = grep.execute()
+        assertEquals(ExecutionResult.OK, code)
         assertEquals(expected, outputStream.toString())
     }
 

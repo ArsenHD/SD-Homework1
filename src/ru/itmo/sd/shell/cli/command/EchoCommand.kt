@@ -1,7 +1,6 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.execution
 
 class EchoCommand(
     override val arguments: List<String> = emptyList()
@@ -9,8 +8,9 @@ class EchoCommand(
 
     override val name: String = "echo"
 
-    override fun execute(): ExecutionResult = execution {
+    override fun execute(): ExecutionResult {
         val result = arguments.joinToString(separator = " ")
         writeLine(result)
+        return ExecutionResult.OK
     }
 }

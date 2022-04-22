@@ -1,10 +1,7 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.ReturnCode
-import ru.itmo.sd.shell.cli.util.execution
 import java.io.File
-import java.io.FileNotFoundException
 
 class WcCommand(
     override val arguments: List<String> = emptyList()
@@ -16,22 +13,19 @@ class WcCommand(
         if (arguments.isNotEmpty()) {
             return processFiles()
         }
-        return execution {
-            val report = process(::read)
-            writeLine(report)
-        }
+        val report = process(::read)
+        writeLine(report)
+        return ExecutionResult.OK
     }
 
-    private fun processFiles(): ExecutionResult = execution {
+    private fun processFiles(): ExecutionResult {
         val files = arguments.map { File(it) }
         val errorFiles = files.filter { !it.exists() }
         errorFiles.forEach {
             errorWriteLine("wc: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
-            code = ReturnCode.FAILURE
-            exception = FileNotFoundException(errorFiles.first().name)
-            return@execution
+            return ExecutionResult.FAILURE
         }
 
         var totalNewlines = 0
@@ -49,6 +43,7 @@ class WcCommand(
         if (files.size > 1) {
             writeLine("$totalNewlines $totalWords $totalBytes total")
         }
+        return ExecutionResult.OK
     }
 
     private fun process(nextChar: () -> Int): Report {

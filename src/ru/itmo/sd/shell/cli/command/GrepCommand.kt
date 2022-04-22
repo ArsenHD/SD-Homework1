@@ -1,11 +1,8 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.ReturnCode
-import ru.itmo.sd.shell.cli.util.execution
 import ru.itmo.sd.shell.cli.util.red
 import java.io.File
-import java.io.FileNotFoundException
 
 class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
     override val optionsInfo = mapOf(
@@ -46,26 +43,23 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
         if (fileName != null) {
             return processFile()
         }
-        return execution {
-            var line = readLine()
-            while (line != null) {
-                processLine(line)?.let { writeLine(it) }
-                line = readLine()
-            }
+        var line = readLine()
+        while (line != null) {
+            processLine(line)?.let { writeLine(it) }
+            line = readLine()
         }
+        return ExecutionResult.OK
     }
 
     private fun processLine(line: String): String? =
         line.takeIf { regex.containsMatchIn(it) }
             ?.replace(regex) { it.value.red() }
 
-    private fun processFile() = execution {
+    private fun processFile(): ExecutionResult {
         val file = File(fileName!!)
         if (!file.isFile) {
             errorWriteLine("grep: ${file.name}: No such file or directory")
-            code = ReturnCode.FAILURE
-            exception = FileNotFoundException(file.name)
-            return@execution
+            return ExecutionResult.FAILURE
         }
 
         var idx = 0
@@ -83,6 +77,7 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
             }
             idx++
         }
+        return ExecutionResult.OK
     }
 
     companion object {

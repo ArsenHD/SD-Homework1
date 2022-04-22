@@ -1,7 +1,6 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.execution
 
 class ExternalCommand(
     private val command: String,
@@ -9,16 +8,15 @@ class ExternalCommand(
 ) : CliSimpleCommand() {
     override val name: String = command
 
-    override fun execute(): ExecutionResult = execution {
+    override fun execute(): ExecutionResult {
         val process = Runtime.getRuntime().exec("${this@ExternalCommand}")
-        val returnCode = process.waitFor()
         val error = process.errorStream.reader().readText()
         if (error.isNotEmpty()) {
             errorWriteLine("Error: $error")
-            code = returnCode
-            return@execution
+            return ExecutionResult.FAILURE
         }
         write(process.inputStream.reader().readText())
+        return ExecutionResult.OK
     }
 
     override fun toString(): String {

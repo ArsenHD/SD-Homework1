@@ -1,7 +1,6 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.execution
 
 class PwdCommand(
     override val arguments: List<String> = emptyList()
@@ -9,7 +8,8 @@ class PwdCommand(
 
     override val name: String = "pwd"
 
-    override fun execute(): ExecutionResult = execution {
+    override fun execute(): ExecutionResult {
         writeLine(System.getProperty("user.dir"))
+        return ExecutionResult.OK
     }
 }

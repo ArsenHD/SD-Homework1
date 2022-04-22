@@ -1,8 +1,6 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.ReturnCode
-import ru.itmo.sd.shell.cli.util.runCommand
 import kotlin.concurrent.thread
 
 class PipelineCommand(val left: CliCommand, val right: CliSimpleCommand) : CliCommand() {
@@ -15,11 +13,11 @@ class PipelineCommand(val left: CliCommand, val right: CliSimpleCommand) : CliCo
     }
 
     override fun execute(): ExecutionResult {
-        val leftRun = thread { runCommand(left) }
-        val result = thread { runCommand(right) }
+        val leftRun = thread { left.execute() }
+        val result = thread { right.execute() }
         leftRun.join()
         result.join()
         // TODO: process errors
-        return ExecutionResult(ReturnCode.OK)
+        return ExecutionResult.OK
     }
 }

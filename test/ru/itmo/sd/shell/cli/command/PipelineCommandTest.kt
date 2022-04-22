@@ -2,6 +2,7 @@ package ru.itmo.sd.shell.cli.command
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class PipelineCommandTest : AbstractCommandTest() {
 
@@ -11,11 +12,11 @@ class PipelineCommandTest : AbstractCommandTest() {
         val wc = WcCommand()
 
         val pipelineCmd = PipelineCommand(pwd, wc)
-        val (code, _) = pipelineCmd.execute()
+        val code = pipelineCmd.execute()
         val directory = System.getProperty("user.dir")
         val expected = "1 1 ${directory.length}\n"
 
-        assertEquals(0, code)
+        assertEquals(ExecutionResult.OK, code)
         assertEquals(expected, outputStream.toString())
     }
 }

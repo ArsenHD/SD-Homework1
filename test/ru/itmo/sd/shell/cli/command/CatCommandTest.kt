@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class CatCommandTest : AbstractSimpleCommandTest() {
 
@@ -13,8 +14,8 @@ class CatCommandTest : AbstractSimpleCommandTest() {
     fun testCat(fileNames: List<String>) {
         val cat = command(fileNames)
         val expected = expectedCat(fileNames)
-        val (code, _) = cat.execute()
-        assertEquals(0, code)
+        val code = cat.execute()
+        assertEquals(ExecutionResult.OK, code)
         assertEquals(expected, outputStream.toString())
     }
 
