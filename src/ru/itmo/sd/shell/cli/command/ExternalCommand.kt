@@ -3,10 +3,9 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class ExternalCommand(
-    private val command: String,
+    override val name: String,
     override val arguments: List<String> = emptyList()
 ) : CliSimpleCommand() {
-    override val name: String = command
 
     override fun execute(): ExecutionResult {
         val process = Runtime.getRuntime().exec("${this@ExternalCommand}")
@@ -22,7 +21,7 @@ class ExternalCommand(
     override fun toString(): String {
         val args = arguments.joinToString(" ")
         return buildString {
-            append(command)
+            append(name)
             if (args.isNotEmpty()) {
                 append(" ")
                 append(args)
