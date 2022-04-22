@@ -26,7 +26,7 @@ class WcCommand(
         val files = arguments.map { File(it) }
         val errorFiles = files.filter { !it.exists() }
         errorFiles.forEach {
-            writeLine("wc: ${it.name}: No such file or directory")
+            errorWriteLine("wc: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             code = ReturnCode.FAILURE

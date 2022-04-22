@@ -11,9 +11,21 @@ sealed class InputStrategy : Closeable {
 }
 
 sealed class OutputStrategy : Closeable {
+    private val errorOutputStream = System.err
+
     abstract fun write(byte: Int)
+
     abstract fun write(text: String)
+
     abstract fun writeLine(text: String)
+
+    fun errorWrite(text: String) {
+        errorOutputStream.print(text)
+    }
+
+    fun errorWriteLine(text: String) {
+        errorOutputStream.println(text)
+    }
 }
 
 object StdInputStrategy : InputStrategy() {
@@ -23,16 +35,18 @@ object StdInputStrategy : InputStrategy() {
 }
 
 object StdOutputStrategy : OutputStrategy() {
+    private val outputStream = System.out
+
     override fun write(byte: Int) {
-        System.out.write(byte)
+        outputStream.write(byte)
     }
 
     override fun write(text: String) {
-        print(text)
+        outputStream.print(text)
     }
 
     override fun writeLine(text: String) {
-        println(text)
+        outputStream.println(text)
     }
 
     override fun close() = Unit
@@ -51,8 +65,8 @@ class PipedInputStrategy(output: PipedOutputStream) : InputStrategy() {
 }
 
 class PipedOutputStrategy : OutputStrategy() {
-    val stream: PipedOutputStream = PipedOutputStream()
-    private val writer = PrintWriter(stream)
+    val outputStream: PipedOutputStream = PipedOutputStream()
+    private val writer = PrintWriter(outputStream)
 
     override fun write(byte: Int) {
         writer.write(byte)

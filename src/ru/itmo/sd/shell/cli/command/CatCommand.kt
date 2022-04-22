@@ -30,7 +30,7 @@ class CatCommand(
         val errorFiles = files.filter { !it.isFile }
 
         errorFiles.forEach {
-            writeLine("cat: ${it.name}: No such file or directory")
+            errorWriteLine("cat: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             code = ReturnCode.FAILURE

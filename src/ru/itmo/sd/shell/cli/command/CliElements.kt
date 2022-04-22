@@ -36,6 +36,14 @@ sealed class CliCommand : CliElement, Closeable {
         outputStrategy.writeLine("$obj")
     }
 
+    fun errorWrite(text: String) {
+        outputStrategy.errorWrite(text)
+    }
+
+    fun errorWriteLine(text: String) {
+        outputStrategy.errorWriteLine(text)
+    }
+
     override fun close() {
         inputStrategy.close()
         outputStrategy.close()
@@ -44,7 +52,7 @@ sealed class CliCommand : CliElement, Closeable {
     open fun connectTo(command: CliCommand) {
         val newOutputStrategy = PipedOutputStrategy()
         outputStrategy = newOutputStrategy
-        command.inputStrategy = PipedInputStrategy(newOutputStrategy.stream)
+        command.inputStrategy = PipedInputStrategy(newOutputStrategy.outputStream)
     }
 }
 

@@ -14,7 +14,7 @@ class ExternalCommand(
         val returnCode = process.waitFor()
         val error = process.errorStream.reader().readText()
         if (error.isNotEmpty()) {
-            writeLine("Error: $error")
+            errorWriteLine("Error: $error")
             code = returnCode
             return@execution
         }
