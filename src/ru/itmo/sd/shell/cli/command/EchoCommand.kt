@@ -3,7 +3,7 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class EchoCommand(
-    override val arguments: List<String> = emptyList()
+    override val arguments: List<String>
 ) : CliSimpleCommand() {
 
     override val name: String = "echo"

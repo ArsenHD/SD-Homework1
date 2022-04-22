@@ -4,7 +4,7 @@ import ru.itmo.sd.shell.cli.util.ExecutionResult
 import java.io.File
 
 class CatCommand(
-    override val arguments: List<String> = emptyList()
+    override val arguments: List<String>
 ) : CliSimpleCommand() {
 
     override val name: String = "cat"

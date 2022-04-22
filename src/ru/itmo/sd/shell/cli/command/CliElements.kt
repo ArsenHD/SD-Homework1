@@ -65,9 +65,11 @@ sealed class CliCommand : CliElement, Closeable {
 /**
  * All non-pipeline commands
  */
-sealed class CliSimpleCommand : CliCommand() {
+sealed class CliSimpleCommand(
+    open val arguments: List<String> = emptyList()
+) : CliCommand() {
+
     abstract val name: String
-    abstract val arguments: List<String>
 
     /**
      * Map from option name to a number of option parameters. Empty by default.

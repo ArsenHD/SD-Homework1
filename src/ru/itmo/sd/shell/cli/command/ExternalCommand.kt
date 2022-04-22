@@ -4,7 +4,7 @@ import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 class ExternalCommand(
     override val name: String,
-    override val arguments: List<String> = emptyList()
+    override val arguments: List<String>
 ) : CliSimpleCommand() {
 
     override fun execute(): ExecutionResult {
