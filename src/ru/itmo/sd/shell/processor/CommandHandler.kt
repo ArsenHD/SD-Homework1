@@ -10,7 +10,7 @@ internal class CommandHandler(private val environment: Environment) {
             .toList()
             .map { it.range }
         if (quotedFragments.isEmpty()) {
-            return substituteVariables(rawText)
+            return substituteVariables(rawText).replace("\"", "")
         }
         return buildString {
             var pos = 0
