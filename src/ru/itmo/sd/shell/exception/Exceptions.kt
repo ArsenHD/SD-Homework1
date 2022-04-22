@@ -11,7 +11,7 @@ class IllegalCommandArgumentException(override val message: String?) : Exception
 class ExecutionFailureError(
     exitCode: Int,
     override val cause: Throwable? = null
-) : Throwable("Execution terminated with exit code $exitCode")
+) : Exception("Execution terminated with exit code $exitCode")
 
 abstract class SyntaxError(override val message: String?) : Exception()
 
