@@ -17,10 +17,10 @@ class CatCommand(
             return processFiles()
         }
         return execution {
-            var line = readLine()
-            while (line != null) {
-                writeLine(line)
-                line = readLine()
+            var char = read()
+            while (char != -1) {
+                write(char)
+                char = read()
             }
         }
     }

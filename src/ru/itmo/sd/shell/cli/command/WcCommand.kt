@@ -17,39 +17,9 @@ class WcCommand(
             return processFiles()
         }
         return execution {
-            var line = readLine()
-            val lines = sequence {
-                while (line != null) {
-                    yield(line!!)
-                    line = readLine()
-                }
-            }
-            val report = lines.processLines()
+            val report = process(::read)
             writeLine(report)
         }
-    }
-
-    private fun Sequence<String>.processLines(): Report {
-        var newlines = 0
-        var words = 0
-        var bytes = 0
-
-        for (line in this) {
-            newlines++
-            processLine(line).let {
-                words += it.first
-                bytes += it.second
-            }
-        }
-        return Report(newlines, words, bytes)
-    }
-
-    private fun processLine(line: String): Pair<Int, Int> {
-        val words = line
-            .split(" ")
-            .filter { it.isNotEmpty() }.size
-        val bytes = line.toByteArray().size
-        return words to bytes
     }
 
     private fun processFiles(): ExecutionResult = execution {
@@ -68,21 +38,48 @@ class WcCommand(
         var totalWords = 0
         var totalBytes = 0
         files.forEach {
-            val (newlines, words, bytes) = processFile(it)
-            totalNewlines += newlines
-            totalWords += words
-            totalBytes += bytes
-            writeLine("$newlines $words $bytes ${it.name}")
+            it.bufferedReader().use { reader ->
+                val (newlines, words, bytes) = process { reader.read() }//processFile(it)
+                totalNewlines += newlines
+                totalWords += words
+                totalBytes += bytes
+                writeLine("$newlines $words $bytes ${it.name}")
+            }
         }
         if (files.size > 1) {
             writeLine("$totalNewlines $totalWords $totalBytes total")
         }
     }
 
-    private fun processFile(file: File): Report =
-        file.useLines {
-            it.processLines()
+    private fun process(nextChar: () -> Int): Report {
+        var newlines = 0
+        var words = 0
+        var bytes = 0
+
+        var char = nextChar()
+        var isPrevWord = false
+        while (char != -1) {
+            bytes++
+            when {
+                char.toChar().isWhitespace() -> {
+                    if (isPrevWord) {
+                        isPrevWord = false
+                        words++
+                    }
+                    if (char.toChar() == '\n') {
+                        newlines++
+                    }
+                }
+                else -> isPrevWord = true
+            }
+            char = nextChar()
         }
+        if (isPrevWord) {
+            words++
+        }
+
+        return Report(newlines, words, bytes)
+    }
 
     data class Report(val newlines: Int, val words: Int, val bytes: Int) {
         override fun toString(): String = "$newlines $words $bytes"

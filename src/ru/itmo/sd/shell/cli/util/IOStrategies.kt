@@ -7,19 +7,26 @@ import java.io.PrintWriter
 
 sealed class InputStrategy : Closeable {
     abstract fun nextLine(): String?
+    abstract fun read(): Int
 }
 
 sealed class OutputStrategy : Closeable {
+    abstract fun write(byte: Int)
     abstract fun write(text: String)
     abstract fun writeLine(text: String)
 }
 
 object StdInputStrategy : InputStrategy() {
     override fun nextLine(): String? = readLine()
+    override fun read(): Int = System.`in`.read()
     override fun close() = Unit
 }
 
 object StdOutputStrategy : OutputStrategy() {
+    override fun write(byte: Int) {
+        System.out.write(byte)
+    }
+
     override fun write(text: String) {
         print(text)
     }
@@ -36,6 +43,8 @@ class PipedInputStrategy(output: PipedOutputStream) : InputStrategy() {
 
     override fun nextLine(): String? = reader.readLine()
 
+    override fun read(): Int = reader.read()
+
     override fun close() {
         reader.close()
     }
@@ -44,6 +53,10 @@ class PipedInputStrategy(output: PipedOutputStream) : InputStrategy() {
 class PipedOutputStrategy : OutputStrategy() {
     val stream: PipedOutputStream = PipedOutputStream()
     private val writer = PrintWriter(stream)
+
+    override fun write(byte: Int) {
+        writer.write(byte)
+    }
 
     override fun write(text: String) {
         writer.println(text)

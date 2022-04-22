@@ -22,6 +22,12 @@ sealed class CliCommand : CliElement, Closeable {
 
     fun readLine(): String? = inputStrategy.nextLine()
 
+    fun read(): Int = inputStrategy.read()
+
+    fun write(byte: Int) {
+        outputStrategy.write(byte)
+    }
+
     fun write(obj: Any) {
         outputStrategy.write("$obj")
     }
