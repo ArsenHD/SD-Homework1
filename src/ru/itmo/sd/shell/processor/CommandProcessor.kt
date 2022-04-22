@@ -2,6 +2,7 @@ package ru.itmo.sd.shell.processor
 
 import ru.itmo.sd.shell.cli.command.*
 import ru.itmo.sd.shell.environment.Environment
+import ru.itmo.sd.shell.exception.ShellShutdownException
 import ru.itmo.sd.shell.exception.SyntaxError
 import ru.itmo.sd.shell.parser.CommandLexer
 import ru.itmo.sd.shell.parser.CommandParser
@@ -16,17 +17,19 @@ class CommandProcessor {
 
     private val parser = CommandParser(lexer)
 
-    fun run() = try {
+    fun run() = runCatching {
         var element = parser.parse()
         while (element != null) {
             process(element)
             element = parser.parse()
         }
         finish()
-    } catch (e: SyntaxError) {
-        println("shell: syntax error: ${e.message}")
-    } catch (e: Exception) {
-        println("shell: error: failed to execute command")
+    }.onFailure {
+        when (it) {
+            is SyntaxError -> println("shell: syntax error: ${it.message}")
+            is ShellShutdownException -> Unit
+            is Exception -> println("shell: error: failed to execute command")
+        }
     }
 
     private fun process(cliElement: CliElement) {
