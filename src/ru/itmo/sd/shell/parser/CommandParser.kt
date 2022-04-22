@@ -7,15 +7,8 @@ import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.util.CommandFactoryHandler
 import ru.itmo.sd.shell.exception.UnexpectedEofException
-import ru.itmo.sd.shell.processor.CommandHandler
-import java.io.InputStream
 
-class CommandParser(
-    inputStream: InputStream,
-    handler: CommandHandler
-) {
-    private val reader = inputStream.bufferedReader()
-    private var lexer = CommandLexer(reader, handler)
+class CommandParser(private val lexer: Lexer) {
 
     private val currentToken: Token
         get() = lexer.currentToken

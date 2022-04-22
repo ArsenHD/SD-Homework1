@@ -3,14 +3,18 @@ package ru.itmo.sd.shell.processor
 import ru.itmo.sd.shell.cli.command.*
 import ru.itmo.sd.shell.environment.Environment
 import ru.itmo.sd.shell.exception.SyntaxError
+import ru.itmo.sd.shell.parser.CommandLexer
 import ru.itmo.sd.shell.parser.CommandParser
 
 class CommandProcessor {
     private val environment = Environment()
-    private val parser = CommandParser(
-        inputStream = System.`in`,
+
+    private val lexer = CommandLexer(
+        reader = System.`in`.bufferedReader(),
         handler = CommandHandler(environment)
     )
+
+    private val parser = CommandParser(lexer)
 
     fun run() = try {
         var element = parser.parse()

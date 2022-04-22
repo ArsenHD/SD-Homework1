@@ -6,17 +6,17 @@ import java.io.BufferedReader
 class CommandLexer(
     private val reader: BufferedReader,
     private val handler: CommandHandler
-) {
-    lateinit var currentToken: Token
-    lateinit var currentText: String
+) : Lexer {
+    override lateinit var currentToken: Token
+    override lateinit var currentText: String
 
     private lateinit var currentLine: String
 
-    var currentPos: Int = 0
+    private var currentPos: Int = 0
 
     private var shouldSkipWhitespaces: Boolean = true
 
-    fun advance(expected: Token? = null): Boolean {
+    override fun advance(expected: Token?): Boolean {
         // if we have just started parsing
         // or reached an end of the current line
         if (currentPos == 0 || currentToken == Token.END) {
