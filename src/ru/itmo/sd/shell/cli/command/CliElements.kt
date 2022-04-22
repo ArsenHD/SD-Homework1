@@ -10,7 +10,7 @@ import ru.itmo.sd.shell.cli.util.StdInputStrategy
 import ru.itmo.sd.shell.cli.util.StdOutputStrategy
 import java.io.Closeable
 
-sealed interface CliElement
+interface CliElement
 
 data class CliVariableAssignment(val name: String, val value: String) : CliElement
 
