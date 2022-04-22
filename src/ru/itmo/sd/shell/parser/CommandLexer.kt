@@ -27,12 +27,6 @@ class CommandLexer(private val input: String) {
         val word = nextWord()
         currentText = word
         currentToken = when (word) {
-            CAT -> Token.CAT
-            ECHO -> Token.ECHO
-            WC -> Token.WC
-            PWD -> Token.PWD
-            GREP -> Token.GREP
-            EXIT -> Token.EXIT
             PIPE -> Token.PIPE
             LET -> Token.LET
             else -> Token.TEXT
@@ -60,12 +54,6 @@ class CommandLexer(private val input: String) {
     }
 
     companion object {
-        private const val CAT = "cat"
-        private const val ECHO = "echo"
-        private const val WC = "wc"
-        private const val PWD = "pwd"
-        private const val GREP = "grep"
-        private const val EXIT = "exit"
         private const val PIPE = "|"
         private const val LET = "let"
         private const val ASSIGN = '='

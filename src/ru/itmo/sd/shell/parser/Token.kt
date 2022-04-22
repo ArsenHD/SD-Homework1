@@ -1,15 +1,9 @@
 package ru.itmo.sd.shell.parser
 
-enum class Token {
-    CAT,    // cat
-    ECHO,   // echo
-    WC,     // wc
-    PWD,    // pwd
-    GREP,    // grep
-    EXIT,   // exit
-    TEXT,   // <some text>
-    PIPE,   // |
-    LET,    // let
-    ASSIGN, // =
-    END     // <end of input>
+enum class Token(val value: String) {
+    TEXT("<TEXT>"),
+    PIPE("|"),
+    LET("LET"),
+    ASSIGN("="),
+    END("<EOF>")
 }

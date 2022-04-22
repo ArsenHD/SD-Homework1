@@ -1,14 +1,9 @@
 package ru.itmo.sd.shell.parser
 
-import ru.itmo.sd.shell.cli.command.CatCommand
 import ru.itmo.sd.shell.cli.command.CliCommand
 import ru.itmo.sd.shell.cli.command.CliElement
 import ru.itmo.sd.shell.cli.command.CliSimpleCommand
 import ru.itmo.sd.shell.cli.command.CliVariableAssignment
-import ru.itmo.sd.shell.cli.command.EchoCommand
-import ru.itmo.sd.shell.cli.command.ExitCommand
-import ru.itmo.sd.shell.cli.command.ExternalCommand
-import ru.itmo.sd.shell.cli.command.GrepCommand
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.PwdCommand
 import ru.itmo.sd.shell.cli.command.WcCommand
@@ -58,23 +53,13 @@ class CommandParser {
         }
     }
 
-    private fun parseSimpleCommand(): CliSimpleCommand {
-        val buildCommand = when (currentToken) {
-            Token.CAT -> ::CatCommand
-            Token.ECHO -> ::EchoCommand
-            Token.WC -> ::WcCommand
-            Token.PWD -> ::PwdCommand
-            Token.GREP -> ::GrepCommand
-            Token.EXIT -> ::ExitCommand
-            Token.TEXT -> {
-                val name = lexer.currentText
-                { args -> ExternalCommand(name, args) }
-            }
-            else -> throw UnexpectedTokenException(currentToken)
-        }
+    private fun parseSimpleCommand(): CliCommand {
+        val commandName = lexer.currentText
+        val commandFactory = CommandFactoryHandler.getFactoryFor(commandName)
+
         lexer.nextToken()
         val arguments = parseArguments()
-        return buildCommand(arguments)
+        return commandFactory.createCommand(arguments)
     }
 
     private fun parseArguments(): List<String> {
