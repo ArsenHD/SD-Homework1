@@ -5,7 +5,7 @@ import ru.itmo.sd.shell.cli.command.CliElement
 import ru.itmo.sd.shell.cli.command.CliEmptyLine
 import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.PipelineCommand
-import ru.itmo.sd.shell.cli.command.util.CommandFactoryHandler
+import ru.itmo.sd.shell.cli.command.CommandFactoryHandler
 import ru.itmo.sd.shell.exception.UnexpectedEofException
 
 class CommandParser(private val lexer: Lexer) {

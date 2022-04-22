@@ -1,12 +1,4 @@
-package ru.itmo.sd.shell.cli.command.util
-
-import ru.itmo.sd.shell.cli.command.CatCommand
-import ru.itmo.sd.shell.cli.command.CliCommand
-import ru.itmo.sd.shell.cli.command.EchoCommand
-import ru.itmo.sd.shell.cli.command.ExitCommand
-import ru.itmo.sd.shell.cli.command.ExternalCommand
-import ru.itmo.sd.shell.cli.command.PwdCommand
-import ru.itmo.sd.shell.cli.command.WcCommand
+package ru.itmo.sd.shell.cli.command
 
 object CommandFactoryHandler {
     fun getFactoryFor(commandName: String): AbstractCommandFactory =
