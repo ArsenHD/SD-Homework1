@@ -3,7 +3,7 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import kotlin.concurrent.thread
 
-class PipelineCommand(val left: CliCommand, val right: CliSimpleCommand) : CliCommand() {
+class PipelineCommand(val left: CliCommand, val right: CliCommand) : CliCommand() {
     init {
         left.connectTo(right)
     }

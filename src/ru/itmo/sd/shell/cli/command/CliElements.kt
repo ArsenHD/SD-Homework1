@@ -14,6 +14,12 @@ sealed interface CliElement
 
 data class CliVariableAssignment(val name: String, val value: String) : CliElement
 
+/**
+ * This is and element being created when a user enters an empty line.
+ * It represents no action.
+ */
+object CliEmptyLine : CliElement
+
 sealed class CliCommand : CliElement, Closeable {
     private var inputStrategy: InputStrategy = StdInputStrategy
     private var outputStrategy: OutputStrategy = StdOutputStrategy

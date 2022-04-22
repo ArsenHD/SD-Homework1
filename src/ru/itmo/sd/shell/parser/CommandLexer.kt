@@ -1,27 +1,48 @@
 package ru.itmo.sd.shell.parser
 
-class CommandLexer(private val input: String) {
+import ru.itmo.sd.shell.processor.CommandHandler
+import java.io.BufferedReader
+
+class CommandLexer(
+    private val reader: BufferedReader,
+    private val handler: CommandHandler
+) {
     lateinit var currentToken: Token
     lateinit var currentText: String
+
+    private lateinit var currentLine: String
+
     var currentPos: Int = 0
 
     private var shouldSkipWhitespaces: Boolean = true
 
-    fun nextToken() {
-        skipWhitespaces()
-
-        if (currentPos >= input.length) {
-            currentToken = Token.END
-            return
+    fun advance(expected: Token? = null): Boolean {
+        // if we have just started parsing
+        // or reached an end of the current line
+        if (currentPos == 0 || currentToken == Token.END) {
+            currentLine = reader.readLine() ?: return false
+            currentLine = handler.preprocessRawText(currentLine)
+            currentPos = 0
         }
 
-        val char = input[currentPos]
+        if (expected != null) {
+            require(currentToken == expected) { unexpectedToken(expected) }
+        }
+
+        skipWhitespaces()
+
+        if (currentPos >= currentLine.length) {
+            currentToken = Token.END
+            return true
+        }
+
+        val char = currentLine[currentPos]
 
         if (char == ASSIGN) {
             currentToken = Token.ASSIGN
             currentText = ASSIGN.toString()
             currentPos++
-            return
+            return true
         }
 
         val word = nextWord()
@@ -33,13 +54,14 @@ class CommandLexer(private val input: String) {
         }
 
         shouldSkipWhitespaces = true
+        return true
     }
 
     private fun skipWhitespaces() {
         if (!shouldSkipWhitespaces) {
             return
         }
-        while (currentPos < input.length && input[currentPos].isWhitespace()) {
+        while (currentPos < currentLine.length && currentLine[currentPos].isWhitespace()) {
             currentPos++
         }
     }
@@ -47,11 +69,13 @@ class CommandLexer(private val input: String) {
     private fun nextWord(): String {
         val start = currentPos
         currentPos++
-        while (currentPos < input.length && !input[currentPos].isWhitespace() && input[currentPos] != '=') {
+        while (currentPos < currentLine.length && !currentLine[currentPos].isWhitespace() && currentLine[currentPos] != '=') {
             currentPos++
         }
-        return input.substring(start until currentPos)
+        return currentLine.substring(start until currentPos)
     }
+
+    private fun unexpectedToken(expected: Token) = "Expected ${expected.value}, but got: $currentText"
 
     companion object {
         private const val PIPE = "|"

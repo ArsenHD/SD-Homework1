@@ -2,40 +2,46 @@ package ru.itmo.sd.shell.parser
 
 import ru.itmo.sd.shell.cli.command.CliCommand
 import ru.itmo.sd.shell.cli.command.CliElement
-import ru.itmo.sd.shell.cli.command.CliSimpleCommand
+import ru.itmo.sd.shell.cli.command.CliEmptyLine
 import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.PipelineCommand
-import ru.itmo.sd.shell.cli.command.PwdCommand
-import ru.itmo.sd.shell.cli.command.WcCommand
-import ru.itmo.sd.shell.exception.UnexpectedTokenException
+import ru.itmo.sd.shell.cli.command.util.CommandFactoryHandler
+import ru.itmo.sd.shell.exception.UnexpectedEofException
+import ru.itmo.sd.shell.processor.CommandHandler
+import java.io.InputStream
 
-class CommandParser {
-    private lateinit var lexer: CommandLexer
+class CommandParser(
+    inputStream: InputStream,
+    handler: CommandHandler
+) {
+    private val reader = inputStream.bufferedReader()
+    private var lexer = CommandLexer(reader, handler)
 
     private val currentToken: Token
         get() = lexer.currentToken
 
-    fun parse(input: String): CliElement {
-        lexer = CommandLexer(input)
-        lexer.nextToken()
+    fun parse(): CliElement? {
+        if (!lexer.advance()) {
+            return null
+        }
         return when (currentToken) {
             Token.LET -> parseAssignment()
+            Token.END -> CliEmptyLine
             else -> parseCliCommand()
         }
     }
 
     private fun parseAssignment(): CliVariableAssignment {
-        require(currentToken == Token.LET) { unexpectedToken("'let'") }
-
-        lexer.nextToken()
-        require(currentToken == Token.TEXT) { unexpectedToken("variable name") }
+        lexer.advance(Token.LET)
         val name = lexer.currentText
 
-        lexer.nextToken()
-        require(currentToken == Token.ASSIGN) { unexpectedToken("'='") }
+        lexer.advance(Token.TEXT)
 
-        lexer.nextToken()
+        lexer.advance(Token.ASSIGN)
         val value = lexer.currentText
+
+        lexer.advance(Token.TEXT)
+        require(currentToken == Token.END) { "Expected end of line after variable declaration" }
 
         return CliVariableAssignment(name, value)
     }
@@ -45,7 +51,11 @@ class CommandParser {
         while (true) {
             when (currentToken) {
                 Token.PIPE -> {
-                    lexer.nextToken()
+                    lexer.advance(Token.PIPE)
+                    // if we reached the end of line and there are no further input lines
+                    if (currentToken == Token.END && !lexer.advance()) {
+                        throw UnexpectedEofException()
+                    }
                     command = PipelineCommand(command, parseSimpleCommand())
                 }
                 else -> return command
@@ -57,7 +67,7 @@ class CommandParser {
         val commandName = lexer.currentText
         val commandFactory = CommandFactoryHandler.getFactoryFor(commandName)
 
-        lexer.nextToken()
+        lexer.advance()
         val arguments = parseArguments()
         return commandFactory.createCommand(arguments)
     }
@@ -66,10 +76,8 @@ class CommandParser {
         val arguments = mutableListOf<String>()
         while (currentToken == Token.TEXT) {
             arguments += lexer.currentText
-            lexer.nextToken()
+            lexer.advance()
         }
         return arguments
     }
-
-    private fun unexpectedToken(expected: String) = "Expected $expected, but got: ${lexer.currentText}"
 }

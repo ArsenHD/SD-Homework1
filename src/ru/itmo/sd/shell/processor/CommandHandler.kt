@@ -2,7 +2,7 @@ package ru.itmo.sd.shell.processor
 
 import ru.itmo.sd.shell.environment.Environment
 
-internal class CommandHandler(private val environment: Environment) {
+class CommandHandler(private val environment: Environment) {
 
     fun preprocessRawText(rawText: String): String {
         val inSingleQuotes = "'[^']*'".toRegex()
