@@ -1,14 +1,11 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
-import ru.itmo.sd.shell.cli.util.InputStrategy
 import ru.itmo.sd.shell.cli.util.Option
-import ru.itmo.sd.shell.cli.util.OutputStrategy
-import ru.itmo.sd.shell.cli.util.PipedInputStrategy
-import ru.itmo.sd.shell.cli.util.PipedOutputStrategy
-import ru.itmo.sd.shell.cli.util.StdInputStrategy
-import ru.itmo.sd.shell.cli.util.StdOutputStrategy
 import java.io.Closeable
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+import java.io.PrintWriter
 
 interface CliElement
 
@@ -21,55 +18,46 @@ data class CliVariableAssignment(val name: String, val value: String) : CliEleme
 object CliEmptyLine : CliElement
 
 sealed class CliCommand : CliElement, Closeable {
-    private var inputStrategy: InputStrategy = StdInputStrategy
-    private var outputStrategy: OutputStrategy = StdOutputStrategy
-
     abstract fun execute(): ExecutionResult
-
-    fun readLine(): String? = inputStrategy.nextLine()
-
-    fun read(): Int = inputStrategy.read()
-
-    fun write(byte: Int) {
-        outputStrategy.write(byte)
-    }
-
-    fun write(obj: Any) {
-        outputStrategy.write("$obj")
-    }
-
-    fun writeLine(obj: Any) {
-        outputStrategy.writeLine("$obj")
-    }
-
-    fun errorWrite(text: String) {
-        outputStrategy.errorWrite(text)
-    }
-
-    fun errorWriteLine(text: String) {
-        outputStrategy.errorWriteLine(text)
-    }
-
-    override fun close() {
-        inputStrategy.close()
-        outputStrategy.close()
-    }
-
-    open fun connectTo(command: CliCommand) {
-        val newOutputStrategy = PipedOutputStrategy()
-        outputStrategy = newOutputStrategy
-        command.inputStrategy = PipedInputStrategy(newOutputStrategy.outputStream)
-    }
 }
 
 /**
  * All non-pipeline commands
  */
-sealed class CliSimpleCommand(
+abstract class CliSimpleCommand : CliCommand() {
     open val arguments: List<String> = emptyList()
-) : CliCommand() {
 
     abstract val name: String
+
+    val inputStream = PipedInputStream()
+    val outputStream = PipedOutputStream()
+
+    private val reader = inputStream.bufferedReader()
+    private val writer = PrintWriter(outputStream.writer(), true)
+
+    fun readLine(): String? = reader.readLine()
+
+    fun read(): Int = reader.read()
+
+    fun write(byte: Int) {
+        writer.write(byte)
+        writer.flush()
+    }
+
+    fun write(obj: Any) {
+        writer.write("$obj")
+        writer.flush()
+    }
+
+    fun writeLine(obj: Any) {
+        writer.println("$obj")
+        writer.flush()
+    }
+
+    override fun close() {
+        inputStream.close()
+        outputStream.close()
+    }
 
     /**
      * Map from option name to a number of option parameters. Empty by default.

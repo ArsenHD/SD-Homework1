@@ -3,13 +3,19 @@ package ru.itmo.sd.shell.parser
 import ru.itmo.sd.shell.cli.command.CliCommand
 import ru.itmo.sd.shell.cli.command.CliElement
 import ru.itmo.sd.shell.cli.command.CliEmptyLine
+import ru.itmo.sd.shell.cli.command.CliSimpleCommand
 import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.CommandFactoryHandler
 import ru.itmo.sd.shell.exception.UnexpectedEofException
+import java.io.InputStream
+import java.io.OutputStream
 
-class CommandParser(private val lexer: Lexer) {
-
+class CommandParser(
+    private val inputStream: InputStream,
+    private val outputStream: OutputStream,
+    private val lexer: Lexer
+) {
     private val currentToken: Token
         get() = lexer.currentToken
 
@@ -40,7 +46,8 @@ class CommandParser(private val lexer: Lexer) {
     }
 
     private fun parseCliCommand(): CliCommand {
-        var command: CliCommand = parseSimpleCommand()
+        val commands = mutableListOf<CliSimpleCommand>()
+        commands += parseSimpleCommand()
         while (true) {
             when (currentToken) {
                 Token.PIPE -> {
@@ -49,19 +56,22 @@ class CommandParser(private val lexer: Lexer) {
                     if (currentToken == Token.END && !lexer.advance()) {
                         throw UnexpectedEofException()
                     }
-                    command = PipelineCommand(command, parseSimpleCommand())
+                    commands += parseSimpleCommand()
                 }
-                else -> return command
+                else -> {
+                    return PipelineCommand(inputStream, outputStream, commands)
+                }
             }
         }
     }
 
-    private fun parseSimpleCommand(): CliCommand {
+    private fun parseSimpleCommand(): CliSimpleCommand {
         val commandName = lexer.currentText
         val commandFactory = CommandFactoryHandler.getFactoryFor(commandName)
 
         lexer.advance()
         val arguments = parseArguments()
+
         return commandFactory.createCommand(arguments)
     }
 

@@ -14,34 +14,33 @@ object CommandFactoryHandler {
 }
 
 abstract class AbstractCommandFactory {
-    abstract fun createCommand(arguments: List<String>): CliCommand
+    abstract fun createCommand(arguments: List<String>): CliSimpleCommand
 }
 
 class CatCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = CatCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = CatCommand(arguments)
 }
 
 class EchoCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = EchoCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = EchoCommand(arguments)
 }
 
 class ExitCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = ExitCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = ExitCommand(arguments)
 }
 
 class GrepCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = CatCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = CatCommand(arguments)
 }
 
 class PwdCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = PwdCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = PwdCommand(arguments)
 }
 
 class WcCommandFactory : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = WcCommand(arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = WcCommand(arguments)
 }
 
 class ExternalCommandFactory(private val commandName: String) : AbstractCommandFactory() {
-    override fun createCommand(arguments: List<String>): CliCommand = ExternalCommand(commandName, arguments)
+    override fun createCommand(arguments: List<String>): CliSimpleCommand = ExternalCommand(commandName, arguments)
 }
-

@@ -8,24 +8,17 @@ class ExternalCommand(
 ) : CliSimpleCommand() {
 
     override fun execute(): ExecutionResult {
-        val process = Runtime.getRuntime().exec("${this@ExternalCommand}")
-        val error = process.errorStream.reader().readText()
-        if (error.isNotEmpty()) {
-            errorWriteLine("Error: $error")
-            return ExecutionResult.FAILURE
+        val process = ProcessBuilder(name, *arguments.toTypedArray()).start()
+        val returnCode = process.waitFor()
+        if (returnCode != 0) {
+            throw ExecutionFailureError(returnCode)
         }
-        write(process.inputStream.reader().readText())
+        process.inputStream.use { input ->
+//            outputStream.use { output ->
+//               input.copyTo(output)
+//            }
+            input.copyTo(outputStream)
+        }
         return ExecutionResult.OK
-    }
-
-    override fun toString(): String {
-        val args = arguments.joinToString(" ")
-        return buildString {
-            append(name)
-            if (args.isNotEmpty()) {
-                append(" ")
-                append(args)
-            }
-        }
     }
 }

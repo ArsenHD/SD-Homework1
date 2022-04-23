@@ -6,16 +6,18 @@ import ru.itmo.sd.shell.exception.ShellShutdownException
 import ru.itmo.sd.shell.exception.SyntaxError
 import ru.itmo.sd.shell.parser.CommandLexer
 import ru.itmo.sd.shell.parser.CommandParser
+import java.io.InputStream
+import java.io.OutputStream
 
-class CommandProcessor {
+class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     private val environment = Environment()
 
     private val lexer = CommandLexer(
-        reader = System.`in`.bufferedReader(),
+        reader = inputStream.bufferedReader(),
         handler = CommandHandler(environment)
     )
 
-    private val parser = CommandParser(lexer)
+    private val parser = CommandParser(inputStream, outputStream, lexer)
 
     fun run() = runCatching {
         var element = parser.parse()
