@@ -51,7 +51,7 @@ class WcCommand(override val arguments: List<String>) : CliSimpleCommand() {
 
         var char = nextChar()
         var isPrevWord = false
-        while (char != -1) {
+        while (char != -1 && char != 4) {
             bytes++
             when {
                 char.toChar().isWhitespace() -> {
