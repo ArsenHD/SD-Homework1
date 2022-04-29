@@ -20,7 +20,7 @@ class WcCommand(override val arguments: List<String>) : CliSimpleCommand() {
         val files = arguments.map { File(it) }
         val errorFiles = files.filter { !it.exists() }
         errorFiles.forEach {
-            errorWriteLine("wc: ${it.name}: No such file or directory")
+            writeLine("wc: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             return ExecutionResult.FAILURE

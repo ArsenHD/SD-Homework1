@@ -24,7 +24,7 @@ class CatCommand(override val arguments: List<String>) : CliSimpleCommand() {
         val errorFiles = files.filter { !it.isFile }
 
         errorFiles.forEach {
-            errorWriteLine("cat: ${it.name}: No such file or directory")
+            writeLine("cat: ${it.name}: No such file or directory")
         }
         if (errorFiles.isNotEmpty()) {
             return ExecutionResult.FAILURE

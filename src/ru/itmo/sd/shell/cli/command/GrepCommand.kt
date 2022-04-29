@@ -58,7 +58,7 @@ class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
     private fun processFile(): ExecutionResult {
         val file = File(fileName!!)
         if (!file.isFile) {
-            errorWriteLine("grep: ${file.name}: No such file or directory")
+            writeLine("grep: ${file.name}: No such file or directory")
             return ExecutionResult.FAILURE
         }
 
