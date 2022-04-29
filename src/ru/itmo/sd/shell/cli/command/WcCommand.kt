@@ -3,9 +3,7 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import java.io.File
 
-class WcCommand(
-    override val arguments: List<String>
-) : CliSimpleCommand() {
+class WcCommand(override val arguments: List<String>) : CliSimpleCommand() {
 
     override val name: String = "wc"
 
