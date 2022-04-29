@@ -1,6 +1,7 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.exception.ExecutionFailureError
 
 class ExternalCommand(
     override val name: String,
@@ -8,7 +9,7 @@ class ExternalCommand(
 ) : CliSimpleCommand() {
 
     override fun execute(): ExecutionResult {
-        val process = ProcessBuilder(name, *arguments.toTypedArray()).start()
+        val process = ProcessBuilder("bash", "-c", name, *arguments.toTypedArray()).start()
         val returnCode = process.waitFor()
         if (returnCode != 0) {
             throw ExecutionFailureError(returnCode)
