@@ -1,26 +1,33 @@
 package ru.itmo.sd.shell.cli.command
 
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.itmo.sd.shell.cli.util.ExecutionResult
+import java.io.ByteArrayOutputStream
+import java.io.File
 
-class CatCommandTest : AbstractSimpleCommandTest() {
+class CatCommandTest : AbstractCommandTest() {
 
     @ParameterizedTest
     @MethodSource("argumentProvider")
     fun testCat(fileNames: List<String>) {
-        val cat = command(fileNames)
-        val expected = expectedCat(fileNames)
-        val code = cat.execute()
-        assertEquals(ExecutionResult.OK, code)
-        assertEquals(expected, outputStream.toString())
+        val outputStream = ByteArrayOutputStream()
+        val cat = CommandFactoryHandler
+            .getFactoryFor("cat")
+            .createCommand(
+                arguments = fileNames,
+                outputStream = outputStream
+            )
+
+        assertResultSuccessful(
+            command = cat,
+            expected = expectedCat(fileNames),
+        )
     }
 
     private fun expectedCat(fileNames: List<String>): String =
-        fileNames.joinToString("") { filesContent[it]!! }
+        fileNames.joinToString("") { File(it).readText() }
 
     companion object {
         @JvmStatic
@@ -34,6 +41,4 @@ class CatCommandTest : AbstractSimpleCommandTest() {
             )
         }
     }
-
-    override fun command(arguments: List<String>) = CatCommand(arguments = arguments)
 }

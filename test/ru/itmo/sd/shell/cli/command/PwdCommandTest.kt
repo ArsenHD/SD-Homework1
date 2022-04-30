@@ -1,20 +1,20 @@
 package ru.itmo.sd.shell.cli.command
 
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import ru.itmo.sd.shell.cli.util.ExecutionResult
+import java.io.ByteArrayOutputStream
 
-class PwdCommandTest : AbstractSimpleCommandTest() {
+class PwdCommandTest : AbstractCommandTest() {
 
     @Test
     fun testPwd() {
-        val pwd = command()
-        val code = pwd.execute()
-        val expected = "${System.getProperty("user.dir")}\n"
-        Assertions.assertEquals(ExecutionResult.OK, code)
-        Assertions.assertEquals(expected, outputStream.toString())
-    }
+        val outputStream = ByteArrayOutputStream()
+        val pwd = CommandFactoryHandler
+            .getFactoryFor("pwd")
+            .createCommand(outputStream = outputStream)
 
-    override fun command(arguments: List<String>): CliSimpleCommand =
-        PwdCommand(arguments = arguments)
+        assertResultSuccessful(
+            command = pwd,
+            expected = "${System.getProperty("user.dir")}\n"
+        )
+    }
 }

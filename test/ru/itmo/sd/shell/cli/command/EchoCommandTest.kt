@@ -1,21 +1,23 @@
 package ru.itmo.sd.shell.cli.command
 
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.itmo.sd.shell.cli.util.ExecutionResult
+import java.io.ByteArrayOutputStream
 
-class EchoCommandTest : AbstractSimpleCommandTest() {
+class EchoCommandTest : AbstractCommandTest() {
 
     @ParameterizedTest
     @MethodSource("argumentProvider")
     fun testEcho(arguments: List<String>) {
-        val echo = command(arguments)
-        val expected = expectedEcho(arguments)
-        val code = echo.execute()
-        Assertions.assertEquals(ExecutionResult.OK, code)
-        Assertions.assertEquals(expected, outputStream.toString())
+        val outputStream = ByteArrayOutputStream()
+        val echo = CommandFactoryHandler
+            .getFactoryFor("echo")
+            .createCommand(arguments, outputStream = outputStream)
+        assertResultSuccessful(
+            command = echo,
+            expected = expectedEcho(arguments)
+        )
     }
 
     private fun expectedEcho(arguments: List<String>): String =
@@ -25,23 +27,18 @@ class EchoCommandTest : AbstractSimpleCommandTest() {
         @JvmStatic
         fun argumentProvider(): List<Arguments> {
             return listOf(
-                Arguments.arguments(someWords.subList(0, 3)),
-                Arguments.arguments(someWords.subList(0, 1)),
-                Arguments.arguments(someWords.subList(2, 4)),
-                Arguments.arguments(someWords.subList(1, 3)),
-                Arguments.arguments(listOf(someWords[0], someWords[2], someWords[4]))
+                Arguments.arguments(listOf(TEXT_1, TEXT_2, TEXT_3)),
+                Arguments.arguments(listOf(TEXT_1)),
+                Arguments.arguments(listOf(TEXT_2, TEXT_3)),
+                Arguments.arguments(listOf(TEXT_1, TEXT_2, TEXT_4)),
+                Arguments.arguments(listOf(TEXT_1, TEXT_3, TEXT_5))
             )
         }
 
-        private val someWords: List<String> = listOf(
-            "abcde",
-            "some_word",
-            "this_is_a_very_long_word",
-            "w0rd_w1th_num6er5",
-            "anotherwordwithnounderscores",
-        )
+        private const val TEXT_1 = "abcde"
+        private const val TEXT_2 = "some_word"
+        private const val TEXT_3 = "this_is_a_very_long_word"
+        private const val TEXT_4 = "w0rd_w1th_num6er5"
+        private const val TEXT_5 = "anotherwordwithnounderscores"
     }
-
-    override fun command(arguments: List<String>): CliSimpleCommand =
-        EchoCommand(arguments = arguments)
 }

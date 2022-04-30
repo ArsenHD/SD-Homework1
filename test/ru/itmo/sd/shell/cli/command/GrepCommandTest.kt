@@ -1,22 +1,28 @@
 package ru.itmo.sd.shell.cli.command
 
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
-import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.red
+import java.io.ByteArrayOutputStream
 
-class GrepCommandTest : AbstractSimpleCommandTest() {
+class GrepCommandTest : AbstractCommandTest() {
 
     @ParameterizedTest
     @MethodSource("argumentProvider")
     fun testGrep(expected: String, arguments: List<String>) {
-        val grep = command(arguments)
-        val code = grep.execute()
-        assertEquals(ExecutionResult.OK, code)
-        assertEquals(expected, outputStream.toString())
+        val outputStream = ByteArrayOutputStream()
+        val grep = CommandFactoryHandler
+            .getFactoryFor("grep")
+            .createCommand(
+                arguments = arguments,
+                outputStream = outputStream
+            )
+        assertResultSuccessful(
+            command = grep,
+            expected = expected,
+        )
     }
 
     companion object {
@@ -54,6 +60,4 @@ class GrepCommandTest : AbstractSimpleCommandTest() {
         """.trimIndent()
         private val EXPECTED_5 = "123abc " + "a12".red() + " 4b 1qwerty " + "a".red() + " " + "abc".red() + LS
     }
-
-    override fun command(arguments: List<String>) = GrepCommand(arguments = arguments)
 }

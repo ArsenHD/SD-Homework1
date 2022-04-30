@@ -1,35 +1,20 @@
 package ru.itmo.sd.shell.cli.command
 
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions
 import ru.itmo.sd.shell.cli.command.util.Utils
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.PrintStream
+import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 abstract class AbstractCommandTest {
-    protected lateinit var outputStream: ByteArrayOutputStream
-
-    @BeforeEach
-    fun setupStreams() {
-        outputStream = ByteArrayOutputStream()
-        System.setOut(PrintStream(outputStream))
-    }
-
-    @AfterEach
-    fun restoreStreams() {
-        System.setOut(System.out)
-    }
-
     companion object {
         val testFiles = Utils.testFiles
-        val testDirs = Utils.testDirs
-
-        val filesContent: Map<String, String> =
-            testFiles.associateWith { File(it).readText() }
     }
-}
 
-abstract class AbstractSimpleCommandTest : AbstractCommandTest() {
-    abstract fun command(arguments: List<String> = emptyList()): CliSimpleCommand
+    fun assertResultSuccessful(
+        command: CliCommand,
+        expected: String,
+    ) {
+        val status = command.execute()
+        Assertions.assertEquals(ExecutionResult.OK, status)
+        Assertions.assertEquals(expected, command.outputStream.toString())
+    }
 }

@@ -4,35 +4,39 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import ru.itmo.sd.shell.exception.ExecutionFailureError
+import java.io.ByteArrayOutputStream
 
-class ExternalCommandTest : AbstractSimpleCommandTest() {
+class ExternalCommandTest : AbstractCommandTest() {
 
     @Test
     fun testExternalCommand() {
         val cmdName = "ls"
-        val process = Runtime.getRuntime().exec(cmdName)
+        val process = ProcessBuilder("bash", "-c", cmdName).start()//Runtime.getRuntime().exec(cmdName)
         val expectedCode = process.waitFor()
-        val error = process.errorStream.reader().readText()
-        val expected = process.inputStream.reader().readText()
+        val error = process.errorStream.reader().use { it.readText() }
+        val expected = process.inputStream.reader().use { it.readText() }
         assertEquals(0, expectedCode)
         assertTrue(error.isEmpty())
 
-        val code = command(listOf(cmdName)).execute().code
+        val outputStream = ByteArrayOutputStream()
+        val command = CommandFactoryHandler
+            .getFactoryFor(cmdName)
+            .createCommand(outputStream = outputStream)
 
-        assertEquals(expectedCode, code)
-        assertEquals(expected, outputStream.toString())
+        assertResultSuccessful(
+            command = command,
+            expected = expected
+        )
     }
 
     @Test
     fun testMissingCommand() {
-        assertThrows<Exception> {
-            command(listOf("abc")).execute()
+        assertThrows<ExecutionFailureError> {
+            CommandFactoryHandler
+                .getFactoryFor("abc")
+                .createCommand()
+                .execute()
         }
-    }
-
-    override fun command(arguments: List<String>): CliSimpleCommand {
-        val name = arguments[0]
-        val args = arguments.drop(1)
-        return ExternalCommand(name, args)
     }
 }
