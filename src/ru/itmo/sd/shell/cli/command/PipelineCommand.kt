@@ -7,6 +7,7 @@ import java.io.OutputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.concurrent.Future
+import kotlin.concurrent.thread
 
 class PipelineCommand(
     override val inputStream: InputStream,
@@ -40,13 +41,13 @@ class PipelineCommand(
 
     override fun execute(): ExecutionResult {
         // read user input to pipe so that it can be processed by commands
-        val connectFromLeft = executorService.submit {
-            lhsConnection.use { inputStream.copyTo(lhsConnection) }
+        val connectFromLeft = thread {
+            lhsConnection.use { inputStream.writeTo(lhsConnection) }
         }
 
         // write pipe output to the user's output stream
-        val connectFromRight = executorService.submit {
-            rhsConnection.use { rhsConnection.copyTo(outputStream) }
+        val connectFromRight = thread {
+            rhsConnection.use { rhsConnection.writeTo(outputStream) }
         }
 
         // launch all commands in parallel
@@ -69,14 +70,20 @@ class PipelineCommand(
         }
 
         // stop reading user input
-        connectFromLeft.get()
-        connectFromRight.get()
+        connectFromLeft.interrupt()
+        connectFromRight.interrupt()
+        connectFromLeft.join()
+        connectFromRight.join()
 
         return ExecutionResult.OK
     }
 
-    override fun close() {
-        inputStream.close()
-        outputStream.close()
+    private fun InputStream.writeTo(outputStream: OutputStream) {
+        while (!Thread.interrupted()) {
+            val n = this.available()
+            if (n > 0) {
+                outputStream.write(this.readNBytes(n))
+            }
+        }
     }
 }
