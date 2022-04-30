@@ -61,7 +61,10 @@ class CommandParser private constructor(
                     commands += parseSimpleCommand()
                 }
                 else -> {
-                    return PipelineCommand(inputStream, outputStream, commands)
+                    return when (commands.size) {
+                        1 -> commands.single()
+                        else -> PipelineCommand(inputStream, outputStream, commands)
+                    }
                 }
             }
         }
@@ -74,7 +77,7 @@ class CommandParser private constructor(
         lexer.advance()
         val arguments = parseArguments()
 
-        return commandFactory.createCommand(arguments)
+        return commandFactory.createCommand(arguments, inputStream, outputStream)
     }
 
     private fun parseArguments(): List<String> {
