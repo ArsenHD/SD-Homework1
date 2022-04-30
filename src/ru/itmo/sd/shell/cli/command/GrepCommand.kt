@@ -3,8 +3,14 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.red
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
-class GrepCommand(override val arguments: List<String>) : CliSimpleCommand() {
+class GrepCommand(
+    override val arguments: List<String>,
+    override var inputStream: InputStream = System.`in`,
+    override var outputStream: OutputStream = System.out
+) : CliSimpleCommand() {
     override val optionsInfo = mapOf(
         IGNORE_CASE to 0,
         COMPLETE_WORDS to 0,

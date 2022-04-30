@@ -2,10 +2,14 @@ package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.exception.ExecutionFailureError
+import java.io.InputStream
+import java.io.OutputStream
 
 class ExternalCommand(
+    override val arguments: List<String>,
     override val name: String,
-    override val arguments: List<String>
+    override var inputStream: InputStream = System.`in`,
+    override var outputStream: OutputStream = System.out
 ) : CliSimpleCommand() {
 
     override fun execute(): ExecutionResult {
@@ -15,9 +19,6 @@ class ExternalCommand(
             throw ExecutionFailureError(returnCode)
         }
         process.inputStream.use { input ->
-//            outputStream.use { output ->
-//               input.copyTo(output)
-//            }
             input.copyTo(outputStream)
         }
         return ExecutionResult.OK

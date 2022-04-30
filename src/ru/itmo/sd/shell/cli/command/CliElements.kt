@@ -3,8 +3,8 @@ package ru.itmo.sd.shell.cli.command
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.Option
 import java.io.Closeable
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import java.io.PrintWriter
 
 interface CliElement
@@ -18,6 +18,8 @@ data class CliVariableAssignment(val name: String, val value: String) : CliEleme
 object CliEmptyLine : CliElement
 
 sealed class CliCommand : CliElement, Closeable {
+    abstract val inputStream: InputStream
+    abstract val outputStream: OutputStream
     abstract fun execute(): ExecutionResult
 }
 
@@ -29,11 +31,11 @@ abstract class CliSimpleCommand : CliCommand() {
 
     abstract val name: String
 
-    val inputStream = PipedInputStream()
-    val outputStream = PipedOutputStream()
+    abstract override var inputStream: InputStream
+    abstract override var outputStream: OutputStream
 
-    private val reader = inputStream.bufferedReader()
-    private val writer = PrintWriter(outputStream.writer(), true)
+    private val reader by lazy { inputStream.bufferedReader() }
+    private val writer by lazy { PrintWriter(outputStream.writer(), true) }
 
     fun readLine(): String? = reader.readLine()
 
