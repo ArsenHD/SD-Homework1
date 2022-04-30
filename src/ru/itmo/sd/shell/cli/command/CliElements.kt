@@ -17,7 +17,7 @@ data class CliVariableAssignment(val name: String, val value: String) : CliEleme
  */
 object CliEmptyLine : CliElement
 
-sealed class CliCommand : CliElement, Closeable {
+sealed class CliCommand : CliElement {
     abstract val inputStream: InputStream
     abstract val outputStream: OutputStream
     abstract fun execute(): ExecutionResult
@@ -26,7 +26,7 @@ sealed class CliCommand : CliElement, Closeable {
 /**
  * All non-pipeline commands
  */
-abstract class CliSimpleCommand : CliCommand() {
+abstract class CliSimpleCommand : CliCommand(), Closeable {
     open val arguments: List<String> = emptyList()
 
     abstract val name: String
@@ -57,8 +57,8 @@ abstract class CliSimpleCommand : CliCommand() {
     }
 
     override fun close() {
-        inputStream.close()
-        outputStream.close()
+        reader.close()
+        writer.close()
     }
 
     /**
