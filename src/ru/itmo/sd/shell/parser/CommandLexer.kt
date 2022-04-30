@@ -1,12 +1,14 @@
 package ru.itmo.sd.shell.parser
 
 import ru.itmo.sd.shell.processor.CommandHandler
-import java.io.BufferedReader
+import java.io.InputStream
 
 class CommandLexer(
-    private val reader: BufferedReader,
+    inputStream: InputStream,
     private val handler: CommandHandler
 ) : Lexer {
+    private val reader = inputStream.bufferedReader()
+
     override lateinit var currentToken: Token
     override lateinit var currentText: String
 

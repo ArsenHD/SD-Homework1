@@ -7,11 +7,13 @@ import ru.itmo.sd.shell.cli.command.CliSimpleCommand
 import ru.itmo.sd.shell.cli.command.CliVariableAssignment
 import ru.itmo.sd.shell.cli.command.PipelineCommand
 import ru.itmo.sd.shell.cli.command.CommandFactoryHandler
+import ru.itmo.sd.shell.environment.Environment
 import ru.itmo.sd.shell.exception.UnexpectedEofException
+import ru.itmo.sd.shell.processor.CommandHandler
 import java.io.InputStream
 import java.io.OutputStream
 
-class CommandParser(
+class CommandParser private constructor(
     private val inputStream: InputStream,
     private val outputStream: OutputStream,
     private val lexer: Lexer
@@ -82,5 +84,19 @@ class CommandParser(
             lexer.advance()
         }
         return arguments
+    }
+
+    companion object {
+        fun getInstance(
+            inputStream: InputStream,
+            outputStream: OutputStream,
+            environment: Environment,
+        ): CommandParser {
+            val lexer = CommandLexer(
+                inputStream = inputStream,
+                handler = CommandHandler(environment)
+            )
+            return CommandParser(inputStream, outputStream, lexer)
+        }
     }
 }

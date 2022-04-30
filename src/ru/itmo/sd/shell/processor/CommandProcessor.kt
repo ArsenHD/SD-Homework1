@@ -13,11 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     private val environment = Environment()
-
-    private val lexer = CommandLexer(
-        reader = inputStream.bufferedReader(),
-        handler = CommandHandler(environment)
-    )
+    private val parser = CommandParser.getInstance(inputStream, outputStream, environment)
 
     private val parser = CommandParser(inputStream, outputStream, lexer)
 
