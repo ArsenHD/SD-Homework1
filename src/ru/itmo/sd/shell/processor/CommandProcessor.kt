@@ -1,6 +1,7 @@
 package ru.itmo.sd.shell.processor
 
 import ru.itmo.sd.shell.cli.command.*
+import ru.itmo.sd.shell.cli.util.executorService
 import ru.itmo.sd.shell.environment.Environment
 import ru.itmo.sd.shell.exception.ShellShutdownException
 import ru.itmo.sd.shell.exception.SyntaxError
@@ -46,6 +47,8 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     }
 
     private fun finish() {
+        executorService.shutdown()
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)
         println("*** Stopping shell ***")
     }
 }

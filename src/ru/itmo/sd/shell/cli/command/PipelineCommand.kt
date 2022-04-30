@@ -1,72 +1,76 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.cli.util.executorService
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import kotlin.concurrent.thread
+import java.util.concurrent.Future
 
 class PipelineCommand(
-    val inputStream: InputStream,
-    val outputStream: OutputStream,
+    override val inputStream: InputStream,
+    override val outputStream: OutputStream,
     private val commands: List<CliSimpleCommand>
 ) : CliCommand() {
+    // These streams are used to connect the user's I/O
+    // with the inner piped I/O of the pipeline.
+    // lhsConnection connects user's input with the pipeline
+    // and rhsConnection connects the pipeline with user output.
+    private val lhsConnection = PipedOutputStream()
+    private val rhsConnection = PipedInputStream()
+
     init {
         for (i in 1..commands.lastIndex) {
-            val output = commands[i - 1].outputStream
-            val input = commands[i].inputStream
-            output.connect(input)
+            val lhsOutput = PipedOutputStream()
+            val rhsInput = PipedInputStream()
+            lhsOutput.connect(rhsInput)
+            commands[i - 1].outputStream = lhsOutput
+            commands[i].inputStream = rhsInput
         }
+        // connect user's input to the piped commands' input
+        val leftmostInput = PipedInputStream()
+        lhsConnection.connect(leftmostInput)
+        commands.first().inputStream = leftmostInput
+        // connect commands' output to the user's output
+        val rightmostOutput = PipedOutputStream()
+        rightmostOutput.connect(rhsConnection)
+        commands.last().outputStream = rightmostOutput
     }
 
     override fun execute(): ExecutionResult {
-        // connect user input to the piped commands' input
-        val outputLeft = PipedOutputStream()
-        outputLeft.connect(commands.first().inputStream)
-        val init = thread {
-            outputLeft.use {
-                while (!Thread.interrupted()) {
-                    val n = inputStream.available()
-                    if (n > 0) {
-                        outputLeft.write(inputStream.readNBytes(n))
-                    }
-                }
-            }
+        // read user input to pipe so that it can be processed by commands
+        val connectFromLeft = executorService.submit {
+            lhsConnection.use { inputStream.copyTo(lhsConnection) }
+        }
+
+        // write pipe output to the user's output stream
+        val connectFromRight = executorService.submit {
+            rhsConnection.use { rhsConnection.copyTo(outputStream) }
         }
 
         // launch all commands in parallel
-        val threads = mutableListOf<Thread>()
+        val tasks = mutableListOf<Future<*>>()
         for (command in commands) {
-            threads += thread {
+            tasks += executorService.submit {
                 command.use {
                     it.execute()
                 }
             }
         }
 
-        // connect command output to the user's output
-        val inputRight = PipedInputStream()
-        commands.last().outputStream.connect(inputRight)
-        val finish = thread {
-            inputRight.use {
-                while (!Thread.interrupted()) {
-                    val n = inputRight.available()
-                    if (n > 0) {
-                        outputStream.write(inputRight.readNBytes(n))
-                    }
-                }
+        // wait until all commands finish execution
+        tasks.forEach { task ->
+            runCatching {
+                task.get()
+            }.onFailure { e ->
+                throw e.cause ?: e
             }
         }
 
-        // wait until all commands finish execution
-        for (thread in threads) {
-            thread.join()
-        }
-
-        // send interruption signals to stop reading user input
-        init.interrupt()
-        finish.interrupt()
+        // stop reading user input
+        connectFromLeft.get()
+        connectFromRight.get()
 
         return ExecutionResult.OK
     }
