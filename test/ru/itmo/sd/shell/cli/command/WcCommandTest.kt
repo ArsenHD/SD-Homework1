@@ -1,5 +1,6 @@
 package ru.itmo.sd.shell.cli.command
 
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
@@ -25,6 +26,26 @@ class WcCommandTest : AbstractCommandTest() {
         assertResultSuccessful(
             command = wc,
             expected = expected
+        )
+    }
+
+    @Test
+    fun testWcOnFiles() {
+        val wc = CommandFactoryHandler
+            .getFactoryFor("wc")
+            .createCommand(
+                arguments = listOf(TEST_FILE_1, TEST_FILE_2),
+                outputStream = ByteArrayOutputStream()
+            )
+
+        assertResultSuccessful(
+            command = wc,
+            expected = """
+                1 5 35 abc.txt
+                10 50 390 my_file.txt
+                11 55 425 total
+                
+            """.trimIndent()
         )
     }
 
