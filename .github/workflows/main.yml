@@ -29,3 +29,12 @@ jobs:
 
       - name: Run Tests
         run: ./gradlew test
+
+      - name: Upload artifact if pipeline failed
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: build reports
+          path: |
+            /home/runner/work/SD-Homework1/SD-Homework1/build/reports/
+
