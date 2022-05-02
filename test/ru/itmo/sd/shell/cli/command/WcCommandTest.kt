@@ -41,9 +41,9 @@ class WcCommandTest : AbstractCommandTest() {
         assertResultSuccessful(
             command = wc,
             expected = """
-                1 5 35 abc.txt
-                10 50 390 my_file.txt
-                11 55 425 total
+                1 5 34 abc.txt
+                10 50 380 my_file.txt
+                11 55 414 total
                 
             """.trimIndent()
         )
