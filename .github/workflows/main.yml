@@ -30,6 +30,14 @@ jobs:
       - name: Run Tests
         run: ./gradlew test
 
+      - name: Compute code coverage
+        run: ./gradlew jacocoTestReport
+
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/jacoco/jacocoTestReport.csv
+
       - name: Upload artifact if pipeline failed
         uses: actions/upload-artifact@v3
         if: failure()
