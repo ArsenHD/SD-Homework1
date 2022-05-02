@@ -17,7 +17,7 @@ class CommandHandler(private val environment: Environment) {
             for (fragment in quotedFragments) {
                 val (l, r) = fragment.first to fragment.last
                 val toProcess = rawText.substring(pos until l)
-                val toLeave = rawText.substring(l .. r)
+                val toLeave = rawText.substring(l..r)
                 append(substituteVariables(toProcess))
                 append(toLeave)
                 pos = r + 1

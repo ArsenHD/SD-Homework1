@@ -20,7 +20,7 @@ class PipelineCommandTest : AbstractCommandTest() {
 
         assertResultSuccessful(
             command = pipelineCmd,
-            expected = "1 1 ${directory.length + 1}\n",
+            expected = "1 1 ${directory.length + 1}\n"
         )
     }
 

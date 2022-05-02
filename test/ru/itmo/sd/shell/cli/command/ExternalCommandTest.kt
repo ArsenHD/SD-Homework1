@@ -12,7 +12,7 @@ class ExternalCommandTest : AbstractCommandTest() {
     @Test
     fun testExternalCommand() {
         val cmdName = "ls"
-        val process = ProcessBuilder("bash", "-c", cmdName).start()//Runtime.getRuntime().exec(cmdName)
+        val process = ProcessBuilder("bash", "-c", cmdName).start()
         val expectedCode = process.waitFor()
         val error = process.errorStream.reader().use { it.readText() }
         val expected = process.inputStream.reader().use { it.readText() }

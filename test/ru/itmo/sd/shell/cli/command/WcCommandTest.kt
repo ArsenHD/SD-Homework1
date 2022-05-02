@@ -35,9 +35,9 @@ class WcCommandTest : AbstractCommandTest() {
         private val inputs: List<String> = listOf(
             "abc",
             "111001010${LS}010101${LS}001010",
-            "some long string${LS}with newline${LS}",
-            "1_*32m#42nq@45${LS}",
-            "4124${LS}6126412${LS}141241${LS}"
+            "some long string${LS}with newline$LS",
+            "1_*32m#42nq@45$LS",
+            "4124${LS}6126412${LS}141241$LS"
         ).map { (it + EOT) }
 
         @JvmStatic
@@ -47,7 +47,7 @@ class WcCommandTest : AbstractCommandTest() {
                 arguments(inputs[1], "2 3 23\n"),
                 arguments(inputs[2], "2 5 30\n"),
                 arguments(inputs[3], "1 1 15\n"),
-                arguments(inputs[4], "3 3 20\n"),
+                arguments(inputs[4], "3 3 20\n")
             )
         }
     }

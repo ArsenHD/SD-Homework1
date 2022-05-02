@@ -21,7 +21,7 @@ class GrepCommandTest : AbstractCommandTest() {
             )
         assertResultSuccessful(
             command = grep,
-            expected = expected,
+            expected = expected
         )
     }
 

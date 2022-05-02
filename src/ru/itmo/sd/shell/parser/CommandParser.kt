@@ -94,7 +94,7 @@ class CommandParser private constructor(
         fun getInstance(
             inputStream: InputStream,
             outputStream: OutputStream,
-            environment: Environment,
+            environment: Environment
         ): CommandParser {
             val lexer = CommandLexer(
                 inputStream = inputStream,

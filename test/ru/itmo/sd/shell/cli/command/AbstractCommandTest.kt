@@ -19,7 +19,7 @@ abstract class AbstractCommandTest {
 
     fun assertResultSuccessful(
         command: CliCommand,
-        expected: String,
+        expected: String
     ) {
         val status = command.execute()
         Assertions.assertEquals(ExecutionResult.OK, status)

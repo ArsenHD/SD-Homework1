@@ -22,7 +22,7 @@ class CatCommandTest : AbstractCommandTest() {
 
         assertResultSuccessful(
             command = cat,
-            expected = expectedCat(fileNames),
+            expected = expectedCat(fileNames)
         )
     }
 

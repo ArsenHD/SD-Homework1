@@ -39,7 +39,7 @@ class WcCommand(
         var totalBytes = 0
         files.forEach {
             it.bufferedReader().use { reader ->
-                val (newlines, words, bytes) = process { reader.read() }//processFile(it)
+                val (newlines, words, bytes) = process { reader.read() }
                 totalNewlines += newlines
                 totalWords += words
                 totalBytes += bytes
