@@ -5,7 +5,7 @@ import ru.itmo.sd.shell.cli.util.ExecutionResult
 
 abstract class AbstractCommandTest {
     companion object {
-        const val TEST_RESOURCES = "testResources"
+        private const val TEST_RESOURCES = "testResources"
 
         const val TEST_FILE_1 = "$TEST_RESOURCES/dir1/abc.txt"
         const val TEST_FILE_2 = "$TEST_RESOURCES/dir1/my_file.txt"
