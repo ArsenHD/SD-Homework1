@@ -1,5 +1,7 @@
 # Software Design HW#1, 2
 
+![Coverage](.github/badges/jacoco.svg)
+
 ### Поддержанные механизмы:
 * Команды
   * cat
