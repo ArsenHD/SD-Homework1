@@ -33,11 +33,14 @@ class CatCommandTest : AbstractCommandTest() {
         @JvmStatic
         fun argumentProvider(): List<Arguments> {
             return listOf(
-                arguments(testFiles.subList(0, 3)),
-                arguments(testFiles.subList(0, 1)),
-                arguments(testFiles.subList(2, 4)),
-                arguments(testFiles.subList(1, 3)),
-                arguments(listOf(testFiles[0], testFiles[2], testFiles[4]))
+                arguments(listOf(TEST_FILE_1, TEST_FILE_2, TEST_FILE_3)),
+                arguments(listOf(TEST_FILE_1)),
+                arguments(listOf(TEST_FILE_3, TEST_FILE_4)),
+                arguments(listOf(TEST_FILE_2, TEST_FILE_3)),
+                arguments(listOf(TEST_FILE_1, TEST_FILE_3, TEST_FILE_5)),
+                arguments(listOf(TEST_FILE_5, TEST_FILE_6, TEST_FILE_8)),
+                arguments(listOf(TEST_FILE_1, TEST_FILE_3, TEST_FILE_7)),
+                arguments(listOf(TEST_FILE_7, TEST_FILE_8, TEST_FILE_7))
             )
         }
     }
