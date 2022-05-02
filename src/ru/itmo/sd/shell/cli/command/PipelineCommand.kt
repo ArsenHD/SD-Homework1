@@ -2,6 +2,7 @@ package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.executorService
+import ru.itmo.sd.shell.environment.Environment
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PipedInputStream
@@ -12,7 +13,8 @@ import kotlin.concurrent.thread
 class PipelineCommand(
     override val inputStream: InputStream,
     override val outputStream: OutputStream,
-    private val commands: List<CliSimpleCommand>
+    private val commands: List<CliSimpleCommand>,
+    override val environment: Environment = Environment()
 ) : CliCommand() {
     // These streams are used to connect the user's I/O
     // with the inner piped I/O of the pipeline.

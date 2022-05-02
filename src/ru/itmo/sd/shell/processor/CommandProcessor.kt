@@ -1,6 +1,5 @@
 package ru.itmo.sd.shell.processor
 
-import ru.itmo.sd.shell.cli.command.*
 import ru.itmo.sd.shell.cli.util.executorService
 import ru.itmo.sd.shell.environment.Environment
 import ru.itmo.sd.shell.exception.ShellShutdownException
@@ -19,7 +18,7 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
             try {
                 var element = parser.parse()
                 while (element != null) {
-                    process(element)
+                    element.execute()
                     element = parser.parse()
                 }
                 finish()
@@ -31,17 +30,6 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
             } catch (e: Exception) {
                 println("shell: error: failed to execute command")
             }
-        }
-    }
-
-    private fun process(cliElement: CliElement) {
-        when (cliElement) {
-            is CliVariableAssignment -> {
-                val (name, value) = cliElement
-                environment[name] = value
-            }
-            is CliEmptyLine -> Unit
-            is CliCommand -> cliElement.execute()
         }
     }
 

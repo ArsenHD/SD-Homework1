@@ -2,25 +2,42 @@ package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.Option
+import ru.itmo.sd.shell.environment.Environment
 import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PrintWriter
 
-interface CliElement
+interface CliElement {
+    fun execute(): ExecutionResult
+}
 
-data class CliVariableAssignment(val name: String, val value: String) : CliElement
+interface CliStatefulElement : CliElement {
+    val environment: Environment
+}
+
+data class CliVariableAssignment(
+    override val environment: Environment,
+    val name: String,
+    val value: String
+) : CliStatefulElement {
+    override fun execute(): ExecutionResult {
+        environment[name] = value
+        return ExecutionResult.OK
+    }
+}
 
 /**
  * This is and element being created when a user enters an empty line.
  * It represents no action.
  */
-object CliEmptyLine : CliElement
+object CliEmptyLine : CliElement {
+    override fun execute(): ExecutionResult = ExecutionResult.OK
+}
 
-sealed class CliCommand : CliElement {
+sealed class CliCommand : CliStatefulElement {
     abstract val inputStream: InputStream
     abstract val outputStream: OutputStream
-    abstract fun execute(): ExecutionResult
 }
 
 /**

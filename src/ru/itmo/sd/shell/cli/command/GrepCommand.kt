@@ -2,12 +2,14 @@ package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
 import ru.itmo.sd.shell.cli.util.red
+import ru.itmo.sd.shell.environment.Environment
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
 class GrepCommand(
     override val arguments: List<String>,
+    override val environment: Environment = Environment(),
     override var inputStream: InputStream = System.`in`,
     override var outputStream: OutputStream = System.out
 ) : CliSimpleCommand() {

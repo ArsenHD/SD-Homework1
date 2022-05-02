@@ -16,7 +16,8 @@ import java.io.OutputStream
 class CommandParser private constructor(
     private val inputStream: InputStream,
     private val outputStream: OutputStream,
-    private val lexer: Lexer
+    private val lexer: Lexer,
+    private val environment: Environment
 ) {
     private val currentToken: Token
         get() = lexer.currentToken
@@ -44,7 +45,7 @@ class CommandParser private constructor(
         lexer.advance(Token.TEXT)
         require(currentToken == Token.END) { "Expected end of line after variable declaration" }
 
-        return CliVariableAssignment(name, value)
+        return CliVariableAssignment(environment, name, value)
     }
 
     private fun parseCliCommand(): CliCommand {
@@ -63,7 +64,7 @@ class CommandParser private constructor(
                 else -> {
                     return when (commands.size) {
                         1 -> commands.single()
-                        else -> PipelineCommand(inputStream, outputStream, commands)
+                        else -> PipelineCommand(inputStream, outputStream, commands, environment)
                     }
                 }
             }
@@ -77,7 +78,7 @@ class CommandParser private constructor(
         lexer.advance()
         val arguments = parseArguments()
 
-        return commandFactory.createCommand(arguments, inputStream, outputStream)
+        return commandFactory.createCommand(arguments, environment, inputStream, outputStream)
     }
 
     private fun parseArguments(): List<String> {
@@ -99,7 +100,7 @@ class CommandParser private constructor(
                 inputStream = inputStream,
                 handler = CommandHandler(environment)
             )
-            return CommandParser(inputStream, outputStream, lexer)
+            return CommandParser(inputStream, outputStream, lexer, environment)
         }
     }
 }
