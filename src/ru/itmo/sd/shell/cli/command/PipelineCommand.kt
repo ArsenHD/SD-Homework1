@@ -82,10 +82,15 @@ class PipelineCommand(
 
     private fun InputStream.writeTo(outputStream: OutputStream) {
         while (!Thread.interrupted()) {
-            val n = this.available()
-            if (n > 0) {
-                outputStream.write(this.readNBytes(n))
-            }
+            this.writeAvailableBytesTo(outputStream)
+        }
+        this.writeAvailableBytesTo(outputStream)
+    }
+
+    private fun InputStream.writeAvailableBytesTo(outputStream: OutputStream) {
+        val n = this.available()
+        if (n > 0) {
+            outputStream.write(this.readNBytes(n))
         }
     }
 }
