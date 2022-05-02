@@ -1,5 +1,6 @@
 package ru.itmo.sd.shell.parser
 
+import ru.itmo.sd.shell.exception.UnmatchedQuoteException
 import ru.itmo.sd.shell.processor.CommandHandler
 import java.io.InputStream
 
@@ -23,6 +24,9 @@ class CommandLexer(
         // or reached an end of the current line
         if (currentPos == 0 || currentToken == Token.END) {
             currentLine = reader.readLine() ?: return false
+            currentLine
+                .takeIf { line -> line.count { it == '\'' || it == '\"' } % 2 != 0 }
+                ?.let { throw UnmatchedQuoteException() }
             currentLine = handler.preprocessRawText(currentLine)
             currentPos = 0
         }
@@ -40,9 +44,9 @@ class CommandLexer(
 
         val char = currentLine[currentPos]
 
-        if (char == ASSIGN) {
-            currentToken = Token.ASSIGN
-            currentText = ASSIGN.toString()
+        Token.fromText(char.toString())?.let { token ->
+            currentToken = token
+            currentText = token.value
             currentPos++
             return true
         }
@@ -50,8 +54,8 @@ class CommandLexer(
         val word = nextWord()
         currentText = word
         currentToken = when (word) {
-            PIPE -> Token.PIPE
-            LET -> Token.LET
+            Token.PIPE.value -> Token.PIPE
+            Token.LET.value -> Token.LET
             else -> Token.TEXT
         }
 
@@ -78,10 +82,4 @@ class CommandLexer(
     }
 
     private fun unexpectedToken(expected: Token) = "Expected ${expected.value}, but got: $currentText"
-
-    companion object {
-        private const val PIPE = "|"
-        private const val LET = "let"
-        private const val ASSIGN = '='
-    }
 }

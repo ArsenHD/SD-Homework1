@@ -4,8 +4,8 @@ class ExecutionFailureError(exitCode: Int) : Exception("Execution failed with ex
 
 abstract class SyntaxError(override val message: String?) : Exception()
 
-class UnexpectedEofException : SyntaxError("unexpected end of file")
+class UnexpectedEofException : SyntaxError("Unexpected end of file")
 
-class UnmatchedParenthesesException : SyntaxError("unexpected EOF while looking for matching parentheses")
+class UnmatchedQuoteException : SyntaxError("Input contains an unmatched quote character")
 
 class ShellShutdownException : Exception()
