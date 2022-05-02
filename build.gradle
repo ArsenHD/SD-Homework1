@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.10'
     id 'java'
+    id 'jacoco'
 }
 
 group 'ru.itmo.sd.shell'
@@ -32,4 +33,12 @@ sourceSets {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        csv.enabled true
+    }
 }
