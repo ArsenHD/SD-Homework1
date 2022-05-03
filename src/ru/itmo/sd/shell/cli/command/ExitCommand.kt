@@ -16,7 +16,7 @@ class ExitCommand(
     override val name: String = "exit"
 
     override fun execute(): ExecutionResult {
-        println("*** Exiting shell ***")
+        writeLine("*** Exiting shell ***")
         // CommandProcessor will catch this exception and stop the application
         throw ShellShutdownException()
     }

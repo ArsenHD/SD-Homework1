@@ -7,11 +7,13 @@ import ru.itmo.sd.shell.exception.SyntaxError
 import ru.itmo.sd.shell.parser.CommandParser
 import java.io.InputStream
 import java.io.OutputStream
+import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
 
 class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     private val environment = Environment()
     private val parser = CommandParser.getInstance(inputStream, outputStream, environment)
+    private val writer = PrintWriter(outputStream.bufferedWriter())
 
     fun run() {
         while (true) {
@@ -24,11 +26,11 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
                 finish()
                 break
             } catch (e: SyntaxError) {
-                println("shell: syntax error: ${e.message}")
+                writer.println("shell: syntax error: ${e.message}")
             } catch (e: ShellShutdownException) {
                 break
             } catch (e: Exception) {
-                println("shell: error: failed to execute command")
+                writer.println("shell: error: failed to execute command")
             }
         }
     }
@@ -36,6 +38,7 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     private fun finish() {
         executorService.shutdown()
         executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)
-        println("*** Stopping shell ***")
+        writer.println("*** Stopping shell ***")
+        writer.close()
     }
 }
