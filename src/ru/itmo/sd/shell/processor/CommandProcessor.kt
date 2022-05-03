@@ -13,9 +13,10 @@ import java.util.concurrent.TimeUnit
 class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
     private val environment = Environment()
     private val parser = CommandParser.getInstance(inputStream, outputStream, environment)
-    private val writer = PrintWriter(outputStream.bufferedWriter())
+    private val writer = PrintWriter(outputStream.bufferedWriter(), true)
 
     fun run() {
+        writer.println("*** The interpreter has been started ***")
         while (true) {
             try {
                 var element = parser.parse()
