@@ -1,4 +1,4 @@
-# Software Design HW#1
+# Software Design HW#1, 2
 
 ![Coverage](.github/badges/jacoco.svg)
 
