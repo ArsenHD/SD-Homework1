@@ -53,6 +53,11 @@ jobs:
         if: failure()
         with:
           name: build reports
-          path: |
-            /home/runner/work/SD-Homework1/SD-Homework1/build/reports/
+          path: /home/runner/work/SD-Homework1/SD-Homework1/build/reports/
+
+      - name: Upload jar files
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar files
+          path: /home/runner/work/SD-Homework1/SD-Homework1/build/libs/
 

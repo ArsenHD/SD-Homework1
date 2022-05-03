@@ -31,6 +31,19 @@ sourceSets {
     }
 }
 
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Uberjar',
+                   'Implementation-Version': archiveVersion,
+                   'Main-Class': 'ru.itmo.sd.shell.ShellKt'
+    }
+    archivesBaseName = "uber-${project.name}"
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar.finalizedBy fatJar
+
 test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
