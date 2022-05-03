@@ -25,4 +25,15 @@ abstract class AbstractCommandTest {
         Assertions.assertEquals(ExecutionResult.OK, status)
         Assertions.assertEquals(expected, command.outputStream.toString())
     }
+
+    fun assertResultFailure(
+        command: CliCommand,
+        expected: String? = null
+    ) {
+        val status = command.execute()
+        Assertions.assertEquals(ExecutionResult.FAILURE, status)
+        if (expected != null) {
+            Assertions.assertEquals(expected, command.outputStream.toString())
+        }
+    }
 }

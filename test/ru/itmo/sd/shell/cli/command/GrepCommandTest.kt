@@ -1,10 +1,13 @@
 package ru.itmo.sd.shell.cli.command
 
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
 import ru.itmo.sd.shell.cli.util.red
+import ru.itmo.sd.shell.exception.IllegalOptionException
 import java.io.ByteArrayOutputStream
 
 class GrepCommandTest : AbstractCommandTest() {
@@ -22,6 +25,44 @@ class GrepCommandTest : AbstractCommandTest() {
         assertResultSuccessful(
             command = grep,
             expected = expected
+        )
+    }
+
+    @Test
+    fun testNegativePadding() {
+        assertThrows<IllegalOptionException> {
+            CommandFactoryHandler
+                .getFactoryFor("grep")
+                .createCommand(
+                    arguments = listOf("-A", "-10", "word", TEST_FILE_1)
+                )
+        }
+    }
+
+    @Test
+    fun testNonNumberPadding() {
+        assertThrows<IllegalOptionException> {
+            CommandFactoryHandler
+                .getFactoryFor("grep")
+                .createCommand(
+                    arguments = listOf("-A", "abc", "word", TEST_FILE_1)
+                )
+        }
+    }
+
+    @Test
+    fun testMissingFile() {
+        val outputStream = ByteArrayOutputStream()
+        val missingFileName = "missing_file"
+        val grep = CommandFactoryHandler
+            .getFactoryFor("grep")
+            .createCommand(
+                arguments = listOf("word", missingFileName),
+                outputStream = outputStream
+            )
+        assertResultFailure(
+            command = grep,
+            expected = "grep: $missingFileName: No such file or directory\n"
         )
     }
 
