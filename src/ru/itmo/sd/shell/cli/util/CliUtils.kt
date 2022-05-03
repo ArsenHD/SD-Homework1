@@ -3,8 +3,8 @@ package ru.itmo.sd.shell.cli.util
 import ru.itmo.sd.shell.cli.command.CliCommand
 import java.util.concurrent.Executors
 
-data class Option(val name: String, val values: List<String>) {
-    override fun toString(): String = "-$name ${values.joinToString(" ")}"
+data class Option(val name: String, val attributes: List<String>) {
+    override fun toString(): String = "-$name ${attributes.joinToString(" ")}"
 }
 
 /**

@@ -9,3 +9,9 @@ class UnexpectedEofException : SyntaxError("Unexpected end of file")
 class UnmatchedQuoteException : SyntaxError("Input contains an unmatched quote character")
 
 class ShellShutdownException : Exception()
+
+abstract class MalformedCommandException : Exception()
+
+class IllegalOptionException(override val message: String?) : MalformedCommandException()
+
+class IllegalCommandArgumentException(override val message: String?) : MalformedCommandException()

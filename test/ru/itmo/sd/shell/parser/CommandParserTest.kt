@@ -36,7 +36,7 @@ class CommandParserTest {
 
         Assertions.assertInstanceOf(GrepCommand::class.java, command)
         command as GrepCommand
-        Assertions.assertEquals(3, command.arguments.size)
+        Assertions.assertEquals(2, command.arguments.size)
         Assertions.assertEquals(1, command.options.size)
     }
 

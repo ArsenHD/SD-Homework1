@@ -2,6 +2,7 @@ package ru.itmo.sd.shell.processor
 
 import ru.itmo.sd.shell.cli.util.executorService
 import ru.itmo.sd.shell.environment.Environment
+import ru.itmo.sd.shell.exception.MalformedCommandException
 import ru.itmo.sd.shell.exception.ShellShutdownException
 import ru.itmo.sd.shell.exception.SyntaxError
 import ru.itmo.sd.shell.parser.CommandParser
@@ -27,6 +28,8 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
                 break
             } catch (e: SyntaxError) {
                 writer.println("shell: syntax error: ${e.message}")
+            } catch (e: MalformedCommandException) {
+                writer.println(e.message)
             } catch (e: ShellShutdownException) {
                 break
             } catch (e: Exception) {

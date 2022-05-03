@@ -1,18 +1,21 @@
 package ru.itmo.sd.shell.cli.command
 
 import ru.itmo.sd.shell.cli.util.ExecutionResult
+import ru.itmo.sd.shell.cli.util.Option
 import ru.itmo.sd.shell.cli.util.red
 import ru.itmo.sd.shell.environment.Environment
+import ru.itmo.sd.shell.exception.IllegalCommandArgumentException
+import ru.itmo.sd.shell.exception.IllegalOptionException
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
 class GrepCommand(
-    override val arguments: List<String>,
+    _arguments: List<String>,
     override val environment: Environment = Environment(),
     override var inputStream: InputStream = System.`in`,
     override var outputStream: OutputStream = System.out
-) : CliSimpleCommand() {
+) : CliSimpleCommand(_arguments) {
     override val optionsInfo = mapOf(
         IGNORE_CASE to 0,
         COMPLETE_WORDS to 0,
@@ -21,29 +24,22 @@ class GrepCommand(
 
     private val ignoreCase: Boolean = IGNORE_CASE in options
     private val completeWords: Boolean = COMPLETE_WORDS in options
-    private val padding: Int = options[PADDING]?.values?.firstOrNull()?.toInt() ?: 0
+    private val padding: Int = options[PADDING]?.attributes?.get(0)?.toInt() ?: 0
 
     private val regexOptions = if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet()
 
-    private val argumentsStartIdx: Int =
-        when {
-            options.isEmpty() -> 0
-            else -> 1 + options.keys
-                .associateWith { arguments.indexOf(it) }
-                .map { (name, idx) -> idx + optionsInfo[name]!! }
-                .maxOrNull()!!
-        }
-
     private val pattern by lazy {
+        arguments.getOrNull(0)
+            ?: throw IllegalCommandArgumentException("Pattern argument is missing")
         if (completeWords)
-            "${WORD_BORDER}${arguments[argumentsStartIdx]}$WORD_BORDER"
+            "${WORD_BORDER}${arguments[0]}$WORD_BORDER"
         else
-            arguments[argumentsStartIdx]
+            arguments[0]
     }
 
     private val regex: Regex = Regex(pattern, regexOptions)
 
-    private val fileName: String? = arguments.getOrNull(argumentsStartIdx + 1)
+    private val fileName: String? = arguments.getOrNull(1)
 
     override val name: String = "grep"
 
@@ -57,6 +53,16 @@ class GrepCommand(
             line = readLine()
         }
         return ExecutionResult.OK
+    }
+
+    override fun validateOption(option: Option) {
+        if (option.name != PADDING) return
+        val paddingValue = option.attributes.singleOrNull()
+            ?: throw IllegalOptionException("One attribute was expected for '-A' option, but got: ${option.attributes.size}")
+        val paddingIntValue = paddingValue.toIntOrNull()
+            ?: throw IllegalOptionException("Attribute of '-A' option must be integer")
+        paddingIntValue.takeIf { it >= 0 }
+            ?: throw IllegalOptionException("Attribute '-A' must be non-negative")
     }
 
     private fun processLine(line: String): String? =

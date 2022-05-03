@@ -7,12 +7,12 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class ExternalCommand(
-    override val arguments: List<String>,
+    _arguments: List<String>,
     override val environment: Environment = Environment(),
     override val name: String,
     override var inputStream: InputStream = System.`in`,
     override var outputStream: OutputStream = System.out
-) : CliSimpleCommand() {
+) : CliSimpleCommand(_arguments) {
 
     override fun execute(): ExecutionResult {
         val process = ProcessBuilder("bash", "-c", name, *arguments.toTypedArray()).start()

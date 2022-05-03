@@ -6,11 +6,11 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class PwdCommand(
-    override val arguments: List<String>,
+    _arguments: List<String>,
     override val environment: Environment = Environment(),
     override var inputStream: InputStream = System.`in`,
     override var outputStream: OutputStream = System.out
-) : CliSimpleCommand() {
+) : CliSimpleCommand(_arguments) {
 
     override val name: String = "pwd"
 

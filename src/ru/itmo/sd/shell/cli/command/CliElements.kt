@@ -43,9 +43,7 @@ sealed class CliCommand : CliStatefulElement {
 /**
  * All non-pipeline commands
  */
-abstract class CliSimpleCommand : CliCommand(), Closeable {
-    open val arguments: List<String> = emptyList()
-
+abstract class CliSimpleCommand(_arguments: List<String>) : CliCommand(), Closeable {
     abstract val name: String
 
     abstract override var inputStream: InputStream
@@ -88,14 +86,31 @@ abstract class CliSimpleCommand : CliCommand(), Closeable {
      */
     open val optionsInfo: Map<String, Int> = emptyMap()
 
+    val arguments: List<String> by lazy {
+        mutableListOf<String>().apply {
+            var i = 0
+            while (i < _arguments.size) {
+                when (val argument = _arguments[i]) {
+                    in optionsInfo -> i += optionsInfo[argument]!!
+                    else -> add(argument)
+                }
+                i++
+            }
+        }
+    }
+
     val options: Map<String, Option> by lazy {
-        optionsInfo
-            .filterKeys { it in arguments }
-            .asSequence()
-            .associate { (name, amount) ->
-                val index = arguments.indexOf(name)
-                val values = arguments.subList(index + 1, index + 1 + amount)
-                name to Option(name, values)
+        _arguments.withIndex()
+            .filter { (_, text) -> text in optionsInfo }
+            .associate { (idx, name) ->
+                val attributeNumber = optionsInfo[name]!!
+                // extract this option's attributes
+                val attributes = _arguments.subList(idx + 1, idx + 1 + attributeNumber)
+                val option = Option(name, attributes)
+                validateOption(option)
+                name to option
             }
     }
+
+    open fun validateOption(option: Option) = Unit
 }
