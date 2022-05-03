@@ -13,7 +13,6 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "commons-io:commons-io:2.11.0"
     testImplementation(platform("org.junit:junit-bom:5.8.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation group: 'io.mockk', name: 'mockk', version: '1.12.3'
