@@ -15,7 +15,7 @@ class PwdCommand(
     override val name: String = "pwd"
 
     override fun execute(): ExecutionResult {
-        writeLine(System.getProperty("user.dir"))
+        writeLine(environment.currentDirectory)
         return ExecutionResult.OK
     }
 }

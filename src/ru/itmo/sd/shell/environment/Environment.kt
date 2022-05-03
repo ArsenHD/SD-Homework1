@@ -1,6 +1,6 @@
 package ru.itmo.sd.shell.environment
 
-class Environment {
+class Environment(var currentDirectory: String = System.getProperty("user.dir")) {
     private val variableByName: MutableMap<String, String> = mutableMapOf()
 
     operator fun set(name: String, value: String) {
