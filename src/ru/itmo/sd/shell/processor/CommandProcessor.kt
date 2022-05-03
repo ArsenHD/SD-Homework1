@@ -24,7 +24,6 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
                     element.execute()
                     element = parser.parse()
                 }
-                finish()
                 break
             } catch (e: SyntaxError) {
                 writer.println("shell: syntax error: ${e.message}")
@@ -34,6 +33,7 @@ class CommandProcessor(inputStream: InputStream, outputStream: OutputStream) {
                 writer.println("shell: error: failed to execute command")
             }
         }
+        finish()
     }
 
     private fun finish() {
