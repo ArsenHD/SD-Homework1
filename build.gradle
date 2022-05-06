@@ -1,0 +1,56 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'java'
+    id 'jacoco'
+}
+
+group 'ru.itmo.sd.shell'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation(platform("org.junit:junit-bom:5.8.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation group: 'io.mockk', name: 'mockk', version: '1.12.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+sourceSets {
+    main {
+        java.setSrcDirs(["src"])
+        resources.setSrcDirs(["resources"])
+    }
+    test {
+        java.setSrcDirs(["test"])
+        resources.setSrcDirs(["testResources"])
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Uberjar',
+                   'Implementation-Version': archiveVersion,
+                   'Main-Class': 'ru.itmo.sd.shell.ShellKt'
+    }
+    archivesBaseName = "uber-${project.name}"
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar.finalizedBy fatJar
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        csv.enabled true
+    }
+}
