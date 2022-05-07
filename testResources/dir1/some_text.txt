@@ -1,0 +1,3 @@
+The contents of file dir1/my_text.txt
+The contents of file dir1/my_text.txt
+The contents of file dir1/my_text.txt
