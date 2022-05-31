@@ -30,6 +30,8 @@ class CommandLexer(private val input: String) {
             CAT -> Token.CAT
             ECHO -> Token.ECHO
             WC -> Token.WC
+            CD -> Token.CD
+            LS -> Token.LS
             PWD -> Token.PWD
             GREP -> Token.GREP
             EXIT -> Token.EXIT
@@ -63,6 +65,8 @@ class CommandLexer(private val input: String) {
         private const val CAT = "cat"
         private const val ECHO = "echo"
         private const val WC = "wc"
+        private const val CD = "cd"
+        private const val LS = "ls"
         private const val PWD = "pwd"
         private const val GREP = "grep"
         private const val EXIT = "exit"
